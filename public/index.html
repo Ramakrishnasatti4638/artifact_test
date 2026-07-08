@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Carousel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <h1>Image Carousel</h1>
+
+    <div class="carousel">
+      <div class="carousel-track-wrapper">
+        <div class="carousel-track">
+          <div class="slide" style="background:#4f86c6;">
+            <span class="slide-label">Slide 1 — Ocean Blue</span>
+          </div>
+          <div class="slide" style="background:#e8735a;">
+            <span class="slide-label">Slide 2 — Sunset Coral</span>
+          </div>
+          <div class="slide" style="background:#5cb85c;">
+            <span class="slide-label">Slide 3 — Forest Green</span>
+          </div>
+          <div class="slide" style="background:#9b59b6;">
+            <span class="slide-label">Slide 4 — Royal Purple</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-btn prev" id="prevBtn" aria-label="Previous slide">&#8592;</button>
+      <button class="nav-btn next" id="nextBtn" aria-label="Next slide">&#8594;</button>
+
+      <div class="indicators">
+        <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
+        <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
+        <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
+        <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="carousel.js"></script>
+</body>
+</html>
