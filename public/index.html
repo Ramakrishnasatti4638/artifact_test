@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toggle Switch</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card" aria-labelledby="toggle-title">
+        <h1 id="toggle-title">Toggle Switch</h1>
+        <p class="subtitle">Click the switch to change between OFF and ON.</p>
+
+        <button
+          id="toggleButton"
+          class="toggle"
+          type="button"
+          role="switch"
+          aria-checked="false"
+          aria-label="Toggle switch"
+        >
+          <span class="toggle-track">
+            <span class="toggle-thumb"></span>
+          </span>
+          <span class="toggle-text">OFF</span>
+        </button>
+
+        <p id="statusLabel" class="status">Status: OFF</p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
