@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .accordion-item {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .accordion-item.open {
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15), 0 1px 3px rgba(0,0,0,0.06);
+      border-color: #c7d2fe;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d3748;
+      transition: background 0.15s ease, color 0.15s ease;
+      line-height: 1.4;
+    }
+
+    .accordion-trigger:hover {
+      background: #f7f8ff;
+      color: #4f46e5;
+    }
+
+    .accordion-item.open .accordion-trigger {
+      color: #4f46e5;
+    }
+
+    .icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #eef2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.3s ease;
+    }
+
+    .icon svg {
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .accordion-item.open .icon {
+      background: #4f46e5;
+    }
+
+    .accordion-item.open .icon svg {
+      transform: rotate(180deg);
+    }
+
+    .accordion-item.open .icon svg path {
+      stroke: #fff;
+    }
+
+    .accordion-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s ease;
+    }
+
+    .accordion-item.open .accordion-body {
+      grid-template-rows: 1fr;
+    }
+
+    .accordion-body-inner {
+      overflow: hidden;
+    }
+
+    .accordion-content {
+      padding: 0 1.5rem 1.25rem;
+      color: #4a5568;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Frequently Asked Questions</h1>
+    <p class="subtitle">Everything you need to know. Can't find an answer? <strong>Contact us.</strong></p>
+
+    <div class="accordion" id="faq">
+
+      <div class="accordion-item">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span>What is your refund policy?</span>
+          <span class="icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 5L7 10L12 5" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <div class="accordion-body" role="region">
+          <div class="accordion-body-inner">
+            <p class="accordion-content">
+              We offer a full 30-day money-back guarantee on all plans. If you're not satisfied for any reason, simply contact our support team within 30 days of purchase and we'll issue a complete refund — no questions asked.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span>Can I change my plan later?</span>
+          <span class="icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 5L7 10L12 5" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <div class="accordion-body" role="region">
+          <div class="accordion-body-inner">
+            <p class="accordion-content">
+              Absolutely! You can upgrade or downgrade your plan at any time from your account settings. Upgrades take effect immediately and you'll only be billed the prorated difference. Downgrades take effect at the start of your next billing cycle.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span>Is my data secure and private?</span>
+          <span class="icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 5L7 10L12 5" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <div class="accordion-body" role="region">
+          <div class="accordion-body-inner">
+            <p class="accordion-content">
+              Yes, security is our top priority. All data is encrypted in transit using TLS 1.3 and at rest using AES-256. We are SOC 2 Type II certified and fully GDPR compliant. We never sell your data to third parties under any circumstances.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger" aria-expanded="false">
+          <span>How do I get in touch with support?</span>
+          <span class="icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 5L7 10L12 5" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <div class="accordion-body" role="region">
+          <div class="accordion-body-inner">
+            <p class="accordion-content">
+              Our support team is available 24/7 via live chat and email. Pro and Enterprise customers also get access to priority phone support with a guaranteed 1-hour response time. You can reach us at support@example.com or through the chat widget in your dashboard.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const accordion = document.getElementById('faq');
+
+    accordion.addEventListener('click', (e) => {
+      const trigger = e.target.closest('.accordion-trigger');
+      if (!trigger) return;
+
+      const item = trigger.closest('.accordion-item');
+      const isOpen = item.classList.contains('open');
+
+      // Close all items
+      accordion.querySelectorAll('.accordion-item').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+      });
+
+      // If the clicked item wasn't already open, open it
+      if (!isOpen) {
+        item.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  </script>
+</body>
+</html>
