@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f9;
+      color: #2d3748;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 2rem;
+      letter-spacing: -0.5px;
+    }
+
+    h1 span {
+      color: #4f6ef7;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ── Add Expense Card ── */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input {
+      height: 2.6rem;
+      padding: 0 0.75rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #2d3748;
+      background: #f7f8fc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: #4f6ef7;
+      box-shadow: 0 0 0 3px rgba(79,110,247,0.12);
+      background: #fff;
+    }
+
+    input::placeholder { color: #a0aec0; }
+
+    button[type="submit"] {
+      height: 2.6rem;
+      padding: 0 1.4rem;
+      background: #4f6ef7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button[type="submit"]:hover  { background: #3a57e8; }
+    button[type="submit"]:active { transform: scale(0.97); }
+
+    .error-msg {
+      margin-top: 0.75rem;
+      font-size: 0.84rem;
+      color: #e53e3e;
+      display: none;
+    }
+
+    /* ── Table Card ── */
+    .table-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .table-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .count-badge {
+      background: #ebf0fe;
+      color: #4f6ef7;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #f7f8fc;
+      text-align: left;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    thead th:last-child { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid #edf2f7;
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f7f8fc; }
+
+    tbody td {
+      padding: 0.9rem 1.5rem;
+      font-size: 0.92rem;
+    }
+
+    .td-amount {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .td-delete {
+      text-align: right;
+      width: 2.5rem;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #cbd5e0;
+      font-size: 1rem;
+      padding: 0.25rem 0.4rem;
+      border-radius: 6px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .btn-delete:hover { color: #e53e3e; background: #fff5f5; }
+
+    .date-cell { color: #718096; font-size: 0.87rem; }
+
+    /* ── Total Row ── */
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem 1rem 1.5rem;
+      background: #f0f3fe;
+      border-top: 2px solid #c7d2fd;
+    }
+
+    .total-row span:first-child {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #4f6ef7;
+    }
+
+    .total-amount {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #2d3748;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem;
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr 1fr; }
+      .form-row .field:first-child { grid-column: 1 / -1; }
+      button[type="submit"] { grid-column: 1 / -1; height: 2.8rem; }
+      tbody td, thead th { padding: 0.75rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💰 Expense <span>Tracker</span></h1>
+
+  <div class="container">
+
+    <!-- Add Expense Form -->
+    <div class="card">
+      <h2>Add Expense</h2>
+      <form id="expense-form" autocomplete="off">
+        <div class="form-row">
+          <div class="field">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" placeholder="e.g. Coffee, Rent…" required />
+          </div>
+          <div class="field">
+            <label for="amount">Amount ($)</label>
+            <input type="number" id="amount" name="amount" placeholder="0.00" min="0.01" step="0.01" required />
+          </div>
+          <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <button type="submit">+ Add</button>
+        </div>
+        <p class="error-msg" id="error-msg"></p>
+      </form>
+    </div>
+
+    <!-- Expenses Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Expenses</h2>
+        <span class="count-badge" id="count-badge">0 items</span>
+      </div>
+
+      <table id="expense-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th style="text-align:right">Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="expense-body">
+          <!-- rows injected by JS -->
+        </tbody>
+      </table>
+
+      <div id="empty-state" class="empty-state" style="display:none;">
+        No expenses yet. Add one above!
+      </div>
+
+      <div class="total-row">
+        <span>Total</span>
+        <span class="total-amount" id="total-amount">$0.00</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const form        = document.getElementById('expense-form');
+    const tbody       = document.getElementById('expense-body');
+    const totalEl     = document.getElementById('total-amount');
+    const countBadge  = document.getElementById('count-badge');
+    const errorMsg    = document.getElementById('error-msg');
+    const emptyState  = document.getElementById('empty-state');
+    const table       = document.getElementById('expense-table');
+
+    let expenses = [];
+
+    // Set today's date as default
+    document.getElementById('date').valueAsDate = new Date();
+
+    async function loadExpenses() {
+      const res = await fetch('/api/expenses');
+      expenses = await res.json();
+      render();
+    }
+
+    function fmt(amount) {
+      return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function fmtDate(d) {
+      const [y, m, day] = d.split('-');
+      return new Date(+y, +m - 1, +day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function render() {
+      tbody.innerHTML = '';
+      const total = expenses.reduce((s, e) => s + e.amount, 0);
+      totalEl.textContent = fmt(total);
+      countBadge.textContent = expenses.length + ' item' + (expenses.length !== 1 ? 's' : '');
+
+      if (expenses.length === 0) {
+        emptyState.style.display = 'block';
+        table.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        table.style.display = '';
+        expenses.forEach(exp => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${escHtml(exp.description)}</td>
+            <td class="date-cell">${fmtDate(exp.date)}</td>
+            <td class="td-amount">${fmt(exp.amount)}</td>
+            <td class="td-delete">
+              <button class="btn-delete" title="Remove" data-id="${exp.id}">✕</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+
+      const body = {
+        description: document.getElementById('description').value.trim(),
+        amount:      document.getElementById('amount').value,
+        date:        document.getElementById('date').value,
+      };
+
+      const res = await fetch('/api/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        errorMsg.textContent = err.error;
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const expense = await res.json();
+      expenses.push(expense);
+      render();
+      form.reset();
+      document.getElementById('date').valueAsDate = new Date();
+    });
+
+    tbody.addEventListener('click', async e => {
+      const btn = e.target.closest('.btn-delete');
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id, 10);
+      await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+      expenses = expenses.filter(ex => ex.id !== id);
+      render();
+    });
+
+    loadExpenses();
+  </script>
+
+</body>
+</html>
