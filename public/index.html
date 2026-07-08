@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-icon">💰</div>
+      <span class="nav-title">Finance Dashboard</span>
+    </div>
+    <div class="nav-right">
+      <select id="monthSelect" class="month-select" aria-label="Select month"></select>
+      <div class="avatar" title="User profile">JD</div>
+    </div>
+  </nav>
+
+  <!-- ── Main page ──────────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <div class="page-header">
+      <h1 id="monthTitle">January 2026</h1>
+      <p>Track your income, expenses, and savings at a glance.</p>
+    </div>
+
+    <!-- ── KPI Cards ──────────────────────────────────────────────────── -->
+    <div class="kpi-row">
+
+      <div class="kpi-card income" id="kpi-income">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Income</span>
+          <div class="kpi-icon">💵</div>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+
+      <div class="kpi-card expenses" id="kpi-expenses">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Expenses</span>
+          <div class="kpi-icon">💳</div>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+
+      <div class="kpi-card net" id="kpi-net">
+        <div class="kpi-top">
+          <span class="kpi-label">Net Savings</span>
+          <div class="kpi-icon">📈</div>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+
+      <div class="kpi-card rate" id="kpi-rate">
+        <div class="kpi-top">
+          <span class="kpi-label">Savings Rate</span>
+          <div class="kpi-icon">🎯</div>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-sub">—</div>
+      </div>
+
+    </div>
+
+    <!-- ── Charts Row ──────────────────────────────────────────────────── -->
+    <div class="charts-row">
+
+      <!-- Bar chart -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Income vs Expenses — Weekly</span>
+          <span class="card-badge" id="barBadge">4 Weeks</span>
+        </div>
+        <div class="bar-chart-wrap">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Donut chart -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Expense Breakdown</span>
+          <span class="card-badge">By Category</span>
+        </div>
+        <div class="donut-wrap">
+          <canvas id="donutChart"></canvas>
+          <div id="donutLegend" class="donut-legend"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Transactions Table ──────────────────────────────────────────── -->
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Recent Transactions</span>
+        <span class="table-badge">Last 10</span>
+      </div>
+      <table class="tx-table" aria-label="Recent transactions">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="txBody"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script src="/js/data.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
