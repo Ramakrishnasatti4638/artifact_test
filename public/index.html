@@ -20,6 +20,94 @@
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
+    .wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    /* ── History panel ── */
+    .history-panel {
+      background: #16213e;
+      border-radius: 24px;
+      padding: 20px;
+      width: 220px;
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-panel h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 180px;
+    }
+
+    .history-list li {
+      background: #0f3460;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: filter 0.1s;
+    }
+
+    .history-list li:hover {
+      filter: brightness(1.2);
+    }
+
+    .history-list .hist-expr {
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-list .hist-result {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .history-empty {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.2);
+      text-align: center;
+      margin: auto;
+    }
+
+    .history-clear {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.75rem;
+      height: 34px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .history-clear:hover {
+      border-color: #e94560;
+      color: #e94560;
+    }
+
     .calculator {
       background: #16213e;
       border-radius: 24px;
@@ -129,6 +217,7 @@
   </style>
 </head>
 <body>
+  <div class="wrapper">
   <div class="calculator">
     <div class="display">
       <div class="expression" id="expression"></div>
@@ -165,16 +254,68 @@
       <button class="btn-num" data-action="decimal">.</button>
       <button class="btn-eq"  data-action="equals">=</button>
     </div>
-  </div>
+  </div><!-- /.calculator -->
+
+    <div class="history-panel">
+      <h2>History</h2>
+      <ul class="history-list" id="historyList">
+        <li class="history-empty" id="historyEmpty">No calculations yet</li>
+      </ul>
+      <button class="history-clear" id="historyClear">Clear history</button>
+    </div>
+
+  </div><!-- /.wrapper -->
 
   <script>
     const resultEl     = document.getElementById('result');
     const expressionEl = document.getElementById('expression');
+    const historyList  = document.getElementById('historyList');
+    const historyEmpty = document.getElementById('historyEmpty');
+    const historyClear = document.getElementById('historyClear');
 
     let currentInput   = '0';
     let previousInput  = '';
     let operator       = null;
     let shouldResetScreen = false;
+    let history        = [];
+
+    function renderHistory() {
+      // Remove all entries except the empty placeholder
+      historyList.querySelectorAll('li:not(#historyEmpty)').forEach(el => el.remove());
+
+      if (history.length === 0) {
+        historyEmpty.style.display = '';
+        return;
+      }
+
+      historyEmpty.style.display = 'none';
+      // Render newest first
+      [...history].reverse().forEach(entry => {
+        const li = document.createElement('li');
+        li.innerHTML = `<div class="hist-expr">${entry.expr}</div><div class="hist-result">${entry.result}</div>`;
+        // Click a history entry to load its result
+        li.addEventListener('click', () => {
+          currentInput = entry.result;
+          operator = null;
+          previousInput = '';
+          shouldResetScreen = false;
+          expressionEl.textContent = entry.expr;
+          updateDisplay();
+        });
+        historyList.appendChild(li);
+      });
+    }
+
+    function pushHistory(expr, result) {
+      history.push({ expr, result });
+      if (history.length > 5) history.shift();
+      renderHistory();
+    }
+
+    historyClear.addEventListener('click', () => {
+      history = [];
+      renderHistory();
+    });
 
     function updateDisplay() {
       // Shrink font if the number is long
@@ -253,6 +394,7 @@
       operator = null;
       previousInput = '';
       shouldResetScreen = true;
+      pushHistory(expressionEl.textContent, currentInput);
       updateDisplay();
     }
 
