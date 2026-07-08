@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kanban Board</title>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0f1117;
+      --surface:      #1a1d27;
+      --border:       #2a2d3e;
+      --text:         #e2e8f0;
+      --text-muted:   #6b7280;
+      --radius:       10px;
+      --shadow:       0 2px 8px rgba(0,0,0,.45);
+      --shadow-hover: 0 6px 20px rgba(0,0,0,.6);
+
+      /* column accent colours */
+      --col-backlog:    #1e2235;
+      --col-progress:   #1a2230;
+      --col-review:     #221e30;
+      --col-done:       #1a2620;
+
+      --col-backlog-hd:   #3b4fd8;
+      --col-progress-hd:  #e08c2a;
+      --col-review-hd:    #9b59d0;
+      --col-done-hd:      #27ae60;
+
+      /* priority */
+      --p-low:    #16a34a;
+      --p-med:    #ca8a04;
+      --p-high:   #dc2626;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────────────── */
+    header {
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    header .logo {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg,#4f6ef7,#9b59d0);
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 17px;
+    }
+    header h1 { font-size: 17px; font-weight: 600; letter-spacing: .3px; }
+    header .subtitle { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+    /* ── Board layout ────────────────────────────────────────────── */
+    .board {
+      display: flex;
+      gap: 18px;
+      padding: 24px 28px;
+      overflow-x: auto;
+      flex: 1;
+      align-items: flex-start;
+    }
+
+    /* ── Column ──────────────────────────────────────────────────── */
+    .column {
+      flex: 0 0 290px;
+      min-width: 290px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 110px);
+    }
+    .column[data-col="backlog"]  { background: var(--col-backlog); }
+    .column[data-col="progress"] { background: var(--col-progress); }
+    .column[data-col="review"]   { background: var(--col-review); }
+    .column[data-col="done"]     { background: var(--col-done); }
+
+    /* drag-over highlight */
+    .column.drag-over {
+      outline: 2px dashed #4f6ef7;
+      outline-offset: -2px;
+    }
+
+    /* ── Column header ───────────────────────────────────────────── */
+    .col-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .col-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .column[data-col="backlog"]  .col-dot { background: var(--col-backlog-hd); }
+    .column[data-col="progress"] .col-dot { background: var(--col-progress-hd); }
+    .column[data-col="review"]   .col-dot { background: var(--col-review-hd); }
+    .column[data-col="done"]     .col-dot { background: var(--col-done-hd); }
+
+    .col-title { font-size: 13px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; flex: 1; }
+
+    .col-count {
+      font-size: 11px; font-weight: 600;
+      background: rgba(255,255,255,.08);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 2px 8px;
+      min-width: 24px; text-align: center;
+    }
+
+    .add-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted);
+      font-size: 20px; line-height: 1;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      display: grid; place-items: center;
+      transition: background .15s, color .15s;
+    }
+    .add-btn:hover { background: rgba(255,255,255,.08); color: var(--text); }
+
+    /* ── Cards container ─────────────────────────────────────────── */
+    .cards {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .cards::-webkit-scrollbar { width: 4px; }
+    .cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* drop placeholder */
+    .drop-placeholder {
+      height: 72px;
+      border: 2px dashed rgba(79,110,247,.45);
+      border-radius: var(--radius);
+      background: rgba(79,110,247,.06);
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    /* ── Task card ───────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 12px 10px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s, opacity .2s, transform .15s;
+      position: relative;
+    }
+    .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+    .card:active { cursor: grabbing; }
+    .card.dragging { opacity: .35; transform: scale(.97); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+    .card-title {
+      font-size: 13.5px; font-weight: 500; line-height: 1.4;
+      flex: 1;
+    }
+    .delete-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 15px; line-height: 1;
+      opacity: 0; transition: opacity .15s, color .15s;
+      padding: 0 2px; flex-shrink: 0; margin-top: -1px;
+    }
+    .card:hover .delete-btn { opacity: 1; }
+    .delete-btn:hover { color: #f87171; }
+
+    .card-meta {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    /* tag */
+    .card-tag {
+      font-size: 11px; font-weight: 500;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+
+    /* priority badge */
+    .badge {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .3px;
+      border-radius: 4px; padding: 2px 7px;
+      text-transform: uppercase;
+    }
+    .badge-low    { background: rgba(22,163,74,.18);  color: #4ade80; border: 1px solid rgba(22,163,74,.3);  }
+    .badge-medium { background: rgba(202,138,4,.18);  color: #fbbf24; border: 1px solid rgba(202,138,4,.3);  }
+    .badge-high   { background: rgba(220,38,38,.18);  color: #f87171; border: 1px solid rgba(220,38,38,.3);  }
+
+    /* avatar */
+    .avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 10px; font-weight: 700;
+      color: #fff; flex-shrink: 0;
+      margin-left: auto;
+      border: 2px solid var(--bg);
+    }
+
+    /* ── Inline add form ─────────────────────────────────────────── */
+    .add-form {
+      margin: 0 10px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+    .add-form.open { display: flex; }
+
+    .add-form input,
+    .add-form select {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 7px 10px;
+      outline: none;
+      width: 100%;
+      transition: border-color .15s;
+    }
+    .add-form input:focus,
+    .add-form select:focus { border-color: #4f6ef7; }
+    .add-form input::placeholder { color: var(--text-muted); }
+    .add-form select option { background: #1a1d27; }
+
+    .add-form-actions {
+      display: flex; gap: 7px;
+    }
+    .btn-confirm {
+      flex: 1; padding: 7px;
+      background: #4f6ef7; color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-confirm:hover { background: #3b5de7; }
+    .btn-cancel {
+      padding: 7px 12px;
+      background: rgba(255,255,255,.06); color: var(--text-muted);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: 12.5px; cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.1); }
+
+    /* ── Scrollbar for board ─────────────────────────────────────── */
+    .board::-webkit-scrollbar { height: 6px; }
+    .board::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🗂</div>
+  <h1>Project Kanban</h1>
+  <span class="subtitle">Sprint 7 · Q3 2025</span>
+</header>
+
+<div class="board" id="board">
+  <!-- Columns injected by JS -->
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DATA & DEFAULTS
+═══════════════════════════════════════════════════════════════ */
+const COLUMNS = [
+  { id: 'backlog',  label: 'Backlog' },
+  { id: 'progress', label: 'In Progress' },
+  { id: 'review',   label: 'In Review' },
+  { id: 'done',     label: 'Done' },
+];
+
+const AVATAR_COLORS = [
+  '#4f6ef7','#9b59d0','#e08c2a','#27ae60',
+  '#e74c3c','#16a085','#d35400','#2980b9',
+];
+
+function avatarColor(name) {
+  let hash = 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) & 0xffffffff;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function initials(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+const DEFAULT_TASKS = [
+  { id: uid(), col: 'backlog',  title: 'Set up CI/CD pipeline',          assignee: 'Alex Kim',    priority: 'high',   tag: 'DevOps'    },
+  { id: uid(), col: 'backlog',  title: 'Write API documentation',         assignee: 'Sara Lee',    priority: 'low',    tag: 'Docs'      },
+  { id: uid(), col: 'backlog',  title: 'Design onboarding flow',          assignee: 'Tom Green',   priority: 'medium', tag: 'Design'    },
+  { id: uid(), col: 'progress', title: 'Implement OAuth login',           assignee: 'Alex Kim',    priority: 'high',   tag: 'Auth'      },
+  { id: uid(), col: 'progress', title: 'Build dashboard analytics',       assignee: 'Mia Chen',    priority: 'medium', tag: 'Frontend'  },
+  { id: uid(), col: 'progress', title: 'Migrate database to PostgreSQL',  assignee: 'Dev Patel',   priority: 'high',   tag: 'Backend'   },
+  { id: uid(), col: 'review',   title: 'Notification service refactor',   assignee: 'Sara Lee',    priority: 'medium', tag: 'Backend'   },
+  { id: uid(), col: 'review',   title: 'Accessibility audit & fixes',     assignee: 'Tom Green',   priority: 'low',    tag: 'A11y'      },
+  { id: uid(), col: 'done',     title: 'User profile page',               assignee: 'Mia Chen',    priority: 'medium', tag: 'Frontend'  },
+  { id: uid(), col: 'done',     title: 'Password reset flow',             assignee: 'Dev Patel',   priority: 'high',   tag: 'Auth'      },
+];
+
+function uid() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+function loadState() {
+  try {
+    const raw = localStorage.getItem('kanban_tasks');
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return DEFAULT_TASKS;
+}
+
+function saveState() {
+  localStorage.setItem('kanban_tasks', JSON.stringify(tasks));
+}
+
+let tasks = loadState();
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════════ */
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  COLUMNS.forEach(col => {
+    const colTasks = tasks.filter(t => t.col === col.id);
+    const colEl = document.createElement('div');
+    colEl.className = 'column';
+    colEl.dataset.col = col.id;
+
+    colEl.innerHTML = `
+      <div class="col-header">
+        <span class="col-dot"></span>
+        <span class="col-title">${col.label}</span>
+        <span class="col-count" id="count-${col.id}">${colTasks.length}</span>
+        <button class="add-btn" title="Add task" data-col="${col.id}">+</button>
+      </div>
+      <div class="cards" id="cards-${col.id}"></div>
+      <div class="add-form" id="form-${col.id}">
+        <input type="text" placeholder="Task title…" id="input-title-${col.id}" maxlength="120" />
+        <input type="text" placeholder="Assignee name…" id="input-assignee-${col.id}" maxlength="40" />
+        <input type="text" placeholder="Tag (e.g. Frontend)" id="input-tag-${col.id}" maxlength="30" />
+        <select id="input-priority-${col.id}">
+          <option value="low">🟢 Low</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="high">🔴 High</option>
+        </select>
+        <div class="add-form-actions">
+          <button class="btn-confirm" data-col="${col.id}">Add Card</button>
+          <button class="btn-cancel" data-col="${col.id}">Cancel</button>
+        </div>
+      </div>
+    `;
+    board.appendChild(colEl);
+
+    const cardsEl = colEl.querySelector(`#cards-${col.id}`);
+    colTasks.forEach(task => {
+      cardsEl.appendChild(buildCard(task));
+    });
+
+    // header add button
+    colEl.querySelector('.add-btn').addEventListener('click', () => openForm(col.id));
+
+    // form buttons
+    colEl.querySelector('.btn-confirm').addEventListener('click', () => submitForm(col.id));
+    colEl.querySelector('.btn-cancel').addEventListener('click',  () => closeForm(col.id));
+
+    // enter key submits
+    colEl.querySelector(`#input-title-${col.id}`).addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitForm(col.id);
+      if (e.key === 'Escape') closeForm(col.id);
+    });
+
+    // column drop zone
+    setupColDrop(colEl, col.id);
+  });
+}
+
+/* ── Build a card element ─────────────────────────────────────── */
+function buildCard(task) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.draggable = true;
+  card.dataset.id = task.id;
+
+  const color = avatarColor(task.assignee || 'User');
+  const ini   = initials(task.assignee || '?');
+  const pri   = task.priority || 'medium';
+
+  card.innerHTML = `
+    <div class="card-top">
+      <span class="card-title">${escHtml(task.title)}</span>
+      <button class="delete-btn" title="Delete task" data-id="${task.id}">×</button>
+    </div>
+    <div class="card-meta">
+      <span class="card-tag">${escHtml(task.tag || 'General')}</span>
+      <span class="badge badge-${pri}">${pri.charAt(0).toUpperCase() + pri.slice(1)}</span>
+      <div class="avatar" style="background:${color}" title="${escHtml(task.assignee)}">${ini}</div>
+    </div>
+  `;
+
+  // delete
+  card.querySelector('.delete-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    deleteTask(task.id);
+  });
+
+  // drag
+  card.addEventListener('dragstart', onDragStart);
+  card.addEventListener('dragend',   onDragEnd);
+
+  return card;
+}
+
+/* ── Column drop-zone setup ───────────────────────────────────── */
+function setupColDrop(colEl, colId) {
+  const cardsEl = colEl.querySelector(`#cards-${colId}`);
+
+  colEl.addEventListener('dragover', e => {
+    e.preventDefault();
+    colEl.classList.add('drag-over');
+    const afterEl = getDragAfterElement(cardsEl, e.clientY);
+    removePlaceholder();
+    const ph = document.createElement('div');
+    ph.className = 'drop-placeholder';
+    if (afterEl) cardsEl.insertBefore(ph, afterEl);
+    else          cardsEl.appendChild(ph);
+  });
+
+  colEl.addEventListener('dragleave', e => {
+    if (!colEl.contains(e.relatedTarget)) {
+      colEl.classList.remove('drag-over');
+      removePlaceholder();
+    }
+  });
+
+  colEl.addEventListener('drop', e => {
+    e.preventDefault();
+    colEl.classList.remove('drag-over');
+    removePlaceholder();
+
+    const id  = e.dataTransfer.getData('text/plain');
+    const afterEl = getDragAfterElement(cardsEl, e.clientY);
+
+    // move in tasks array
+    const idx = tasks.findIndex(t => t.id === id);
+    if (idx === -1) return;
+
+    const [task] = tasks.splice(idx, 1);
+    task.col = colId;
+
+    // figure out insertion index within this column's tasks
+    const colTasksBefore = tasks.filter(t => t.col === colId);
+    let insertAtId = afterEl ? afterEl.dataset.id : null;
+
+    // re-insert into tasks array at correct position
+    if (!insertAtId) {
+      // append at end
+      tasks.push(task);
+    } else {
+      const globalIdx = tasks.findIndex(t => t.id === insertAtId);
+      tasks.splice(globalIdx, 0, task);
+    }
+
+    saveState();
+    render();
+  });
+}
+
+/* ── Drag helpers ─────────────────────────────────────────────── */
+let dragId = null;
+
+function onDragStart(e) {
+  dragId = this.dataset.id;
+  e.dataTransfer.setData('text/plain', dragId);
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => this.classList.add('dragging'), 0);
+}
+
+function onDragEnd() {
+  this.classList.remove('dragging');
+  removePlaceholder();
+  document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+}
+
+function removePlaceholder() {
+  document.querySelectorAll('.drop-placeholder').forEach(p => p.remove());
+}
+
+function getDragAfterElement(container, y) {
+  const draggables = [...container.querySelectorAll('.card:not(.dragging)')];
+  return draggables.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > (closest.offset ?? -Infinity)) {
+      return { offset, element: child };
+    }
+    return closest;
+  }, {}).element;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADD FORM
+═══════════════════════════════════════════════════════════════ */
+function openForm(colId) {
+  // Close any other open form first
+  document.querySelectorAll('.add-form.open').forEach(f => f.classList.remove('open'));
+  document.getElementById(`form-${colId}`).classList.add('open');
+  document.getElementById(`input-title-${colId}`).focus();
+}
+
+function closeForm(colId) {
+  const form = document.getElementById(`form-${colId}`);
+  form.classList.remove('open');
+  form.querySelectorAll('input').forEach(i => i.value = '');
+  form.querySelector('select').value = 'medium';
+}
+
+function submitForm(colId) {
+  const titleEl    = document.getElementById(`input-title-${colId}`);
+  const assigneeEl = document.getElementById(`input-assignee-${colId}`);
+  const tagEl      = document.getElementById(`input-tag-${colId}`);
+  const priorityEl = document.getElementById(`input-priority-${colId}`);
+
+  const title = titleEl.value.trim();
+  if (!title) { titleEl.focus(); return; }
+
+  const newTask = {
+    id:       uid(),
+    col:      colId,
+    title,
+    assignee: assigneeEl.value.trim() || 'Team Member',
+    tag:      tagEl.value.trim()      || 'General',
+    priority: priorityEl.value,
+  };
+
+  tasks.push(newTask);
+  saveState();
+  closeForm(colId);
+  render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DELETE
+═══════════════════════════════════════════════════════════════ */
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveState();
+  render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════════════ */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+render();
+</script>
+</body>
+</html>
