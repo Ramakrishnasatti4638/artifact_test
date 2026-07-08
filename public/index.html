@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Countdown Timer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f0f1a;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #fff;
+    }
+
+    .card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 24px;
+      padding: 56px 72px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      min-width: 340px;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8888aa;
+      margin-bottom: 40px;
+    }
+
+    .timer-ring {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 40px;
+    }
+
+    .timer-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .timer-ring .track {
+      fill: none;
+      stroke: #2a2a4a;
+      stroke-width: 8;
+    }
+
+    .timer-ring .progress {
+      fill: none;
+      stroke: #6c63ff;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 565.48; /* 2π × 90 */
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke 0.4s ease;
+    }
+
+    .timer-ring .progress.done {
+      stroke: #ff4f6a;
+    }
+
+    .time-display {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    #countdown {
+      font-size: 4rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -2px;
+      transition: color 0.4s ease;
+    }
+
+    #countdown.done { color: #ff4f6a; }
+
+    #message {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #ff4f6a;
+      min-height: 1.2em;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #message.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    button#reset {
+      margin-top: 8px;
+      padding: 14px 48px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #fff;
+      background: #6c63ff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.35);
+    }
+
+    button#reset:hover {
+      background: #7d75ff;
+      box-shadow: 0 6px 28px rgba(108, 99, 255, 0.5);
+    }
+
+    button#reset:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Countdown Timer</h1>
+
+    <div class="timer-ring">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle class="track"    cx="100" cy="100" r="90"/>
+        <circle class="progress" cx="100" cy="100" r="90" id="ring"/>
+      </svg>
+      <div class="time-display">
+        <span id="countdown">10</span>
+        <span id="message">Time's up!</span>
+      </div>
+    </div>
+
+    <button id="reset">Reset</button>
+  </div>
+
+  <script>
+    const TOTAL = 10;
+    const CIRCUMFERENCE = 2 * Math.PI * 90; // ≈ 565.48
+
+    const countdownEl = document.getElementById('countdown');
+    const messageEl   = document.getElementById('message');
+    const ringEl      = document.getElementById('ring');
+    const resetBtn    = document.getElementById('reset');
+
+    let remaining = TOTAL;
+    let timerId   = null;
+
+    function setProgress(value) {
+      const fraction = value / TOTAL;
+      ringEl.style.strokeDashoffset = CIRCUMFERENCE * (1 - fraction);
+    }
+
+    function render() {
+      countdownEl.textContent = remaining;
+      setProgress(remaining);
+
+      if (remaining === 0) {
+        countdownEl.classList.add('done');
+        ringEl.classList.add('done');
+        messageEl.classList.add('visible');
+      } else {
+        countdownEl.classList.remove('done');
+        ringEl.classList.remove('done');
+        messageEl.classList.remove('visible');
+      }
+    }
+
+    function start() {
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        if (remaining > 0) {
+          remaining--;
+          render();
+        }
+        if (remaining === 0) clearInterval(timerId);
+      }, 1000);
+    }
+
+    function reset() {
+      clearInterval(timerId);
+      remaining = TOTAL;
+      render();
+      start();
+    }
+
+    resetBtn.addEventListener('click', reset);
+
+    // Kick off on load
+    render();
+    start();
+  </script>
+</body>
+</html>
