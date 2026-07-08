@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
+  <title>Login &amp; Register</title>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -14,8 +14,11 @@
     body {
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2rem;
+      padding: 2.5rem 1rem;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
@@ -185,6 +188,45 @@
     .signup-text a:hover {
       text-decoration: underline;
     }
+
+    .btn-register {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.75rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-register:hover {
+      opacity: 0.92;
+    }
+
+    .btn-register:active {
+      transform: scale(0.98);
+    }
+
+    .login-text {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .login-text a {
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-text a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -247,7 +289,105 @@
     <div class="divider">or</div>
 
     <p class="signup-text">
-      Don't have an account? <a href="#">Sign up</a>
+      Don't have an account? <a href="#register">Sign up</a>
+    </p>
+  </div>
+
+  <!-- ── Registration card ── -->
+  <div class="card" id="register">
+    <div class="card-header">
+      <div class="logo">
+        <!-- Person icon -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="7" r="4"/>
+          <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <h1>Create account</h1>
+      <p>Sign up for free today</p>
+    </div>
+
+    <form action="/register" method="POST" novalidate>
+      <div class="form-group">
+        <label for="reg-name">Full name</label>
+        <div class="input-wrapper">
+          <!-- Person outline icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="3.5"/>
+            <path d="M4 20c0-3.9 3.6-7 8-7s8 3.1 8 7"/>
+          </svg>
+          <input
+            type="text"
+            id="reg-name"
+            name="name"
+            placeholder="Jane Doe"
+            autocomplete="name"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Email address</label>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <polyline points="2,4 12,13 22,4"/>
+          </svg>
+          <input
+            type="email"
+            id="reg-email"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="15" r="4"/>
+            <line x1="11.5" y1="11.5" x2="20" y2="3"/>
+            <line x1="17" y1="6" x2="19" y2="8"/>
+          </svg>
+          <input
+            type="password"
+            id="reg-password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-confirm">Confirm password</label>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <input
+            type="password"
+            id="reg-confirm"
+            name="confirm_password"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-register">Create account</button>
+    </form>
+
+    <div class="divider">or</div>
+
+    <p class="login-text">
+      Already have an account? <a href="#">Sign in</a>
     </p>
   </div>
 </body>

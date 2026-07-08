@@ -18,6 +18,17 @@ app.post('/login', (req, res) => {
   res.send(`<p style="font-family:sans-serif;text-align:center;margin-top:2rem;">Login received for <strong>${email}</strong>. (Demo only — no real auth.)</p>`);
 });
 
+app.post('/register', (req, res) => {
+  const { name, email, password, confirm_password } = req.body;
+  if (!name || !email || !password || !confirm_password) {
+    return res.status(400).send('All fields are required.');
+  }
+  if (password !== confirm_password) {
+    return res.status(400).send('Passwords do not match.');
+  }
+  res.send(`<p style="font-family:sans-serif;text-align:center;margin-top:2rem;">Account created for <strong>${email}</strong>. (Demo only — no real auth.)</p>`);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
