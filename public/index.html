@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    /* ── Form card ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      margin-bottom: 1.75rem;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #374151;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field.grow { flex: 1; }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"], select {
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      background: #fff;
+      transition: border-color .18s, box-shadow .18s;
+      outline: none;
+      height: 42px;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+    }
+
+    select { cursor: pointer; min-width: 130px; }
+
+    button[type="submit"] {
+      height: 42px;
+      padding: 0 1.25rem;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .18s, transform .1s;
+    }
+
+    button[type="submit"]:hover { background: #4f46e5; }
+    button[type="submit"]:active { transform: scale(.97); }
+
+    /* ── Error banner ── */
+    .error-msg {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+    }
+
+    /* ── Task list ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .task-count {
+      background: #e0e7ff;
+      color: #4338ca;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+    }
+
+    #task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: #9ca3af;
+    }
+
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* ── Task item ── */
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #fff;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07);
+      border-left: 4px solid transparent;
+      transition: transform .15s, box-shadow .15s;
+      animation: slideIn .2s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+    /* Priority colours */
+    .task-item.priority-low    { border-left-color: #22c55e; }
+    .task-item.priority-medium { border-left-color: #f59e0b; }
+    .task-item.priority-high   { border-left-color: #ef4444; }
+
+    .task-info { flex: 1; min-width: 0; }
+
+    .task-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1a1a2e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      margin-top: 0.2rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: 999px;
+      padding: 0.15rem 0.55rem;
+    }
+
+    .badge-low    { background: #dcfce7; color: #15803d; }
+    .badge-medium { background: #fef9c3; color: #b45309; }
+    .badge-high   { background: #fee2e2; color: #b91c1c; }
+
+    .delete-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #d1d5db;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+    }
+
+    .delete-btn:hover { background: #fee2e2; color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>✅ Task Manager</h1>
+      <p>Stay organised — add, prioritise, and clear your tasks.</p>
+    </header>
+
+    <!-- Add task form -->
+    <div class="card">
+      <h2>New Task</h2>
+      <form id="task-form">
+        <div class="form-row">
+          <div class="field grow">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" placeholder="What needs to be done?" maxlength="120" />
+          </div>
+          <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="Low">🟢 Low</option>
+              <option value="Medium" selected>🟡 Medium</option>
+              <option value="High">🔴 High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button type="submit">+ Add Task</button>
+          </div>
+        </div>
+        <div class="error-msg" id="error-msg"></div>
+      </form>
+    </div>
+
+    <!-- Task list -->
+    <div class="section-header">
+      <h2>Tasks</h2>
+      <span class="task-count" id="task-count">0</span>
+    </div>
+
+    <ul id="task-list">
+      <li class="empty-state" id="empty-state">
+        <div class="icon">📋</div>
+        <p>No tasks yet. Add one above!</p>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    const form       = document.getElementById('task-form');
+    const titleInput = document.getElementById('title');
+    const prioritySelect = document.getElementById('priority');
+    const taskList   = document.getElementById('task-list');
+    const taskCount  = document.getElementById('task-count');
+    const errorMsg   = document.getElementById('error-msg');
+    const emptyState = document.getElementById('empty-state');
+
+    let tasks = [];
+
+    // ── Render ──────────────────────────────────────────────
+    function render() {
+      // Remove old task items (keep empty-state li)
+      taskList.querySelectorAll('.task-item').forEach(el => el.remove());
+
+      taskCount.textContent = tasks.length;
+      emptyState.style.display = tasks.length === 0 ? '' : 'none';
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = `task-item priority-${task.priority.toLowerCase()}`;
+        li.dataset.id = task.id;
+
+        const badgeClass = `badge-${task.priority.toLowerCase()}`;
+
+        li.innerHTML = `
+          <div class="task-info">
+            <div class="task-title">${escHtml(task.title)}</div>
+            <span class="priority-badge ${badgeClass}">${escHtml(task.priority)}</span>
+          </div>
+          <button class="delete-btn" aria-label="Delete task" title="Delete">&#x2715;</button>
+        `;
+
+        li.querySelector('.delete-btn').addEventListener('click', () => deleteTask(task.id));
+        taskList.appendChild(li);
+      });
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Load tasks ──────────────────────────────────────────
+    async function loadTasks() {
+      const res = await fetch('/tasks');
+      tasks = await res.json();
+      render();
+    }
+
+    // ── Add task ────────────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+
+      const title    = titleInput.value.trim();
+      const priority = prioritySelect.value;
+
+      if (!title) {
+        showError('Please enter a task title.');
+        return;
+      }
+
+      const res = await fetch('/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, priority }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        showError(data.error || 'Failed to add task.');
+        return;
+      }
+
+      const task = await res.json();
+      tasks.push(task);
+      render();
+      titleInput.value = '';
+      titleInput.focus();
+    });
+
+    // ── Delete task ─────────────────────────────────────────
+    async function deleteTask(id) {
+      const res = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+      if (res.status === 204) {
+        tasks = tasks.filter(t => t.id !== id);
+        render();
+      }
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    // ── Init ────────────────────────────────────────────────
+    loadTasks();
+  </script>
+</body>
+</html>
