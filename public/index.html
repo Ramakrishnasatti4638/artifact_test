@@ -16,7 +16,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #1a1a2e;
+      background: #121212;
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
@@ -28,12 +28,12 @@
 
     /* ── History panel ── */
     .history-panel {
-      background: #16213e;
+      background: #1e1e1e;
       border-radius: 24px;
       padding: 20px;
       width: 220px;
       box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.5),
+        0 25px 60px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
@@ -59,11 +59,12 @@
     }
 
     .history-list li {
-      background: #0f3460;
+      background: #0a0a0a;
       border-radius: 10px;
       padding: 10px 14px;
       cursor: pointer;
       transition: filter 0.1s;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .history-list li:hover {
@@ -104,23 +105,23 @@
     }
 
     .history-clear:hover {
-      border-color: #e94560;
-      color: #e94560;
+      border-color: #22c55e;
+      color: #22c55e;
     }
 
     .calculator {
-      background: #16213e;
+      background: #1e1e1e;
       border-radius: 24px;
       padding: 24px;
       box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.5),
+        0 25px 60px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.05);
       width: 320px;
     }
 
     /* ── Display ── */
     .display {
-      background: #0f3460;
+      background: #0a0a0a;
       border-radius: 14px;
       padding: 20px 20px 14px;
       margin-bottom: 20px;
@@ -130,6 +131,7 @@
       justify-content: flex-end;
       align-items: flex-end;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .display .expression {
@@ -179,36 +181,36 @@
 
     /* Number & decimal buttons */
     .btn-num {
-      background: #1e3a5f;
-      color: #e2e8f0;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      background: #f3f4f6;
+      color: #111827;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .btn-num:hover { filter: brightness(1.15); }
+    .btn-num:hover { filter: brightness(0.9); }
 
     /* Operator buttons (+, −, ×, ÷) */
     .btn-op {
-      background: #e94560;
-      color: #fff;
-      box-shadow: 0 4px 10px rgba(233, 69, 96, 0.35);
+      background: #e5e7eb;
+      color: #1f2937;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .btn-op:hover { filter: brightness(1.12); }
+    .btn-op:hover { filter: brightness(0.9); }
 
     /* Equals */
     .btn-eq {
-      background: linear-gradient(135deg, #e94560, #c0392b);
+      background: linear-gradient(135deg, #22c55e, #16a34a);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(233, 69, 96, 0.5);
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
       font-size: 1.5rem;
     }
     .btn-eq:hover { filter: brightness(1.1); }
 
     /* Utility: AC, +/−, % */
     .btn-util {
-      background: #2a4a7f;
-      color: #a8c5f0;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      background: #d1d5db;
+      color: #374151;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
-    .btn-util:hover { filter: brightness(1.15); }
+    .btn-util:hover { filter: brightness(0.9); }
 
     /* Zero spans 2 columns */
     .span-two {
