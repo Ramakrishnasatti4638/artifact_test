@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Manager</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Operations Dashboard</p>
+        <h1>Inventory Manager</h1>
+        <p>Track products, spot low stock, import inventory, and adjust quantities in real time.</p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="content">
+        <section class="kpis" aria-label="Inventory KPIs">
+          <article><span>Total Products</span><strong id="totalProducts">0</strong></article>
+          <article><span>Total Value</span><strong id="totalValue">$0.00</strong></article>
+          <article><span>Low Stock Items</span><strong id="lowStockCount">0</strong></article>
+        </section>
+
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <h2>Products</h2>
+              <p>Click any column header to sort.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr id="tableHeaders"></tr>
+              </thead>
+              <tbody id="productRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card import-card">
+          <div class="section-heading">
+            <div>
+              <h2>Bulk Import</h2>
+              <p>Paste a JSON array of products. Invalid rows are skipped with errors.</p>
+            </div>
+            <button id="previewImport" class="secondary">Preview</button>
+          </div>
+          <textarea id="bulkJson" spellcheck="false">[
+  {
+    "sku": "LAB-332",
+    "name": "Safety Goggles",
+    "category": "Lab Supplies",
+    "quantity": 18,
+    "minStock": 12,
+    "unitPrice": 14.25,
+    "supplier": "LabWorks"
+  }
+]</textarea>
+          <div class="import-actions">
+            <button id="importProducts">Import Products</button>
+            <span id="importStatus" role="status"></span>
+          </div>
+          <div id="importPreview" class="preview"></div>
+        </section>
+      </section>
+
+      <aside class="sidebar">
+        <section class="low-stock-panel">
+          <h2>Low Stock Alert</h2>
+          <p>Most critical items appear first.</p>
+          <div id="lowStockList"></div>
+        </section>
+
+        <section class="card movements-card">
+          <h2>Recent Stock Movements</h2>
+          <div id="movementList"></div>
+        </section>
+      </aside>
+    </main>
+
+    <dialog id="adjustModal">
+      <form method="dialog" id="adjustForm">
+        <div class="modal-heading">
+          <h2 id="modalTitle">Adjust Stock</h2>
+          <button type="button" id="closeModal" aria-label="Close">×</button>
+        </div>
+        <input type="hidden" id="adjustProductId" />
+        <input type="hidden" id="adjustDirection" />
+        <label>
+          Quantity
+          <input id="adjustQuantity" type="number" min="1" step="1" required />
+        </label>
+        <label>
+          Reason
+          <textarea id="adjustReason" rows="3" required placeholder="Reason for stock change"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancelAdjust" class="secondary">Cancel</button>
+          <button type="submit">Save Adjustment</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
