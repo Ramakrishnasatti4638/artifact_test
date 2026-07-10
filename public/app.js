@@ -8,10 +8,32 @@ const copyBtn = document.getElementById('copyBtn');
 const linksTableBody = document.getElementById('linksTableBody');
 const totalLinksEl = document.getElementById('totalLinks');
 const totalClicksEl = document.getElementById('totalClicks');
+const themeToggle = document.getElementById('themeToggle');
+
+// Theme Management
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    updateThemeIcon(true);
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark-theme');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateThemeIcon(isDark);
+}
+
+function updateThemeIcon(isDark) {
+  const icon = themeToggle.querySelector('.theme-icon');
+  icon.textContent = isDark ? '☀️' : '🌙';
+}
 
 // Event Listeners
 shortenBtn.addEventListener('click', handleShorten);
 copyBtn.addEventListener('click', copyToClipboard);
+themeToggle.addEventListener('click', toggleTheme);
 
 // Allow Enter key to submit
 urlInput.addEventListener('keypress', (e) => {
@@ -23,6 +45,7 @@ customAlias.addEventListener('keypress', (e) => {
 });
 
 // Initialize
+initTheme();
 loadLinks();
 
 // Shorten URL
