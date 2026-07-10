@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener</h1>
+            <p>Create short, memorable links in seconds</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalLinks">0</div>
+                <div class="stat-label">TOTAL LINKS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalClicks">0</div>
+                <div class="stat-label">TOTAL CLICKS</div>
+            </div>
+        </div>
+
+        <div class="shorten-section">
+            <h2>Shorten a URL</h2>
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Enter your long URL here..." />
+                <input type="text" id="customAlias" placeholder="Custom alias (optional)" />
+                <button id="shortenBtn">Shorten URL</button>
+            </div>
+            <div id="result" class="result hidden">
+                <p>Your shortened URL:</p>
+                <div class="short-url-display">
+                    <a id="shortUrl" href="" target="_blank"></a>
+                    <button id="copyBtn">Copy</button>
+                </div>
+            </div>
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <div class="links-section">
+            <h2>Your Links</h2>
+            <table id="linksTable">
+                <thead>
+                    <tr>
+                        <th>ORIGINAL URL</th>
+                        <th>SHORT URL</th>
+                        <th>CLICKS</th>
+                        <th>CREATED</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="linksBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">No links yet. Create your first one above!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
