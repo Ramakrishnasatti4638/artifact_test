@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snip — URL Shortener</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222535;
+      --border: #2e3149;
+      --accent: #6c63ff;
+      --accent-hover: #857dff;
+      --accent-dim: rgba(108, 99, 255, 0.15);
+      --danger: #ff5c5c;
+      --danger-dim: rgba(255, 92, 92, 0.12);
+      --text: #e8e9f0;
+      --text-muted: #7b7f9e;
+      --text-faint: #4a4e6a;
+      --green: #4ade80;
+      --green-dim: rgba(74, 222, 128, 0.12);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 40px 16px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    header .logo-icon {
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #e8e9f0 0%, #6c63ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Shorten form ── */
+    .shorten-card { margin-bottom: 24px; }
+    .shorten-card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .form-row input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 11px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-row input::placeholder { color: var(--text-faint); }
+    .form-row input:focus { border-color: var(--accent); }
+
+    .alias-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .alias-row label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .alias-row input {
+      flex: 1;
+      min-width: 140px;
+      max-width: 260px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 9px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .alias-row input::placeholder { color: var(--text-faint); }
+    .alias-row input:focus { border-color: var(--accent); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 11px 22px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      font-size: 0.82rem;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-danger {
+      background: var(--danger-dim);
+      border: 1px solid transparent;
+      color: var(--danger);
+      padding: 6px 12px;
+      font-size: 0.82rem;
+    }
+    .btn-danger:hover { border-color: var(--danger); }
+
+    /* ── Error / Success messages ── */
+    .message {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      display: none;
+    }
+    .message.error {
+      background: var(--danger-dim);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .message.success {
+      background: var(--green-dim);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+    .message.show { display: block; }
+
+    /* ── Result box ── */
+    .result-box {
+      margin-top: 18px;
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .result-box.show { display: flex; }
+    .result-box .short-url {
+      flex: 1;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+      word-break: break-all;
+    }
+    .result-box .short-url a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .result-box .short-url a:hover { text-decoration: underline; }
+    .copy-btn {
+      flex-shrink: 0;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; }
+    .copy-btn:active { transform: scale(0.96); }
+
+    /* ── Stats summary ── */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-card .stat-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .stat-card .stat-icon { font-size: 1.4rem; margin-bottom: 2px; }
+
+    /* ── Links table ── */
+    .links-card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .links-card h2 .badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--text-faint);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td {
+      padding: 13px 14px;
+      vertical-align: middle;
+      color: var(--text);
+    }
+    td.original-url {
+      max-width: 240px;
+    }
+    td.original-url span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-muted);
+      font-size: 0.83rem;
+    }
+    td.short-url-cell a {
+      color: var(--accent-hover);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    td.short-url-cell a:hover { text-decoration: underline; }
+    td.clicks {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .click-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    td.date-cell {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-faint);
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      body { padding: 24px 12px 60px; }
+      header h1 { font-size: 1.6rem; }
+      .card { padding: 20px 16px; }
+      .form-row { flex-direction: column; }
+      .form-row input { min-width: 0; }
+      th, td { padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">✂️</div>
+        <h1>Snip</h1>
+      </div>
+      <p>Shorten URLs instantly. Track every click.</p>
+    </header>
+
+    <!-- Shorten Form -->
+    <div class="card shorten-card">
+      <h2>Shorten a URL</h2>
+      <div class="form-row">
+        <input type="text" id="urlInput" placeholder="https://your-long-url.com/goes/here" autocomplete="off" />
+        <button class="btn btn-primary" id="shortenBtn" onclick="shorten()">
+          ✂️ Shorten
+        </button>
+      </div>
+      <div class="alias-row">
+        <label for="aliasInput">Custom alias (optional):</label>
+        <input type="text" id="aliasInput" placeholder="my-link" autocomplete="off" maxlength="32" />
+      </div>
+      <div class="message error" id="errorMsg"></div>
+      <div class="result-box" id="resultBox">
+        <div class="short-url" id="resultUrl"></div>
+        <button class="copy-btn" id="copyBtn" onclick="copyUrl()">
+          <span id="copyIcon">📋</span> <span id="copyText">Copy</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">🔗</div>
+        <div class="stat-label">Total Links</div>
+        <div class="stat-value" id="statLinks">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👆</div>
+        <div class="stat-label">Total Clicks</div>
+        <div class="stat-value" id="statClicks">0</div>
+      </div>
+    </div>
+
+    <!-- Links Table -->
+    <div class="card links-card">
+      <h2>
+        All Links
+        <span class="badge" id="linksBadge">0</span>
+      </h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Original URL</th>
+              <th>Short URL</th>
+              <th>Clicks</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="linksBody">
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-icon">✂️</div>
+                  <p>No links yet. Shorten your first URL above!</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = window.location.origin;
+    let currentShortUrl = '';
+
+    async function shorten() {
+      const urlInput = document.getElementById('urlInput');
+      const aliasInput = document.getElementById('aliasInput');
+      const errorMsg = document.getElementById('errorMsg');
+      const resultBox = document.getElementById('resultBox');
+      const shortenBtn = document.getElementById('shortenBtn');
+
+      const url = urlInput.value.trim();
+      const customAlias = aliasInput.value.trim();
+
+      // Hide previous results
+      errorMsg.classList.remove('show');
+      resultBox.classList.remove('show');
+
+      if (!url) {
+        showError('Please enter a URL.');
+        return;
+      }
+
+      // Loading state
+      shortenBtn.disabled = true;
+      shortenBtn.innerHTML = '<span class="spinner"></span> Shortening…';
+
+      try {
+        const body = { url };
+        if (customAlias) body.customAlias = customAlias;
+
+        const res = await fetch('/api/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Something went wrong.');
+          return;
+        }
+
+        currentShortUrl = `${BASE}/${data.shortCode}`;
+
+        const resultUrlEl = document.getElementById('resultUrl');
+        resultUrlEl.innerHTML = `<a href="${currentShortUrl}" target="_blank" rel="noopener">${currentShortUrl}</a>`;
+
+        // Reset copy button
+        document.getElementById('copyIcon').textContent = '📋';
+        document.getElementById('copyText').textContent = 'Copy';
+
+        resultBox.classList.add('show');
+        urlInput.value = '';
+        aliasInput.value = '';
+
+        await loadLinks();
+      } catch (err) {
+        showError('Network error. Is the server running?');
+      } finally {
+        shortenBtn.disabled = false;
+        shortenBtn.innerHTML = '✂️ Shorten';
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    async function copyUrl() {
+      if (!currentShortUrl) return;
+      try {
+        await navigator.clipboard.writeText(currentShortUrl);
+        document.getElementById('copyIcon').textContent = '✅';
+        document.getElementById('copyText').textContent = 'Copied!';
+        setTimeout(() => {
+          document.getElementById('copyIcon').textContent = '📋';
+          document.getElementById('copyText').textContent = 'Copy';
+        }, 2000);
+      } catch {
+        // Fallback for non-HTTPS / older browsers
+        const ta = document.createElement('textarea');
+        ta.value = currentShortUrl;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        document.getElementById('copyIcon').textContent = '✅';
+        document.getElementById('copyText').textContent = 'Copied!';
+        setTimeout(() => {
+          document.getElementById('copyIcon').textContent = '📋';
+          document.getElementById('copyText').textContent = 'Copy';
+        }, 2000);
+      }
+    }
+
+    async function loadLinks() {
+      try {
+        const res = await fetch('/api/links');
+        const links = await res.json();
+        renderLinks(links);
+      } catch (err) {
+        console.error('Failed to load links', err);
+      }
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderLinks(links) {
+      const tbody = document.getElementById('linksBody');
+      const totalLinks = links.length;
+      const totalClicks = links.reduce((s, l) => s + l.clickCount, 0);
+
+      document.getElementById('statLinks').textContent = totalLinks;
+      document.getElementById('statClicks').textContent = totalClicks;
+      document.getElementById('linksBadge').textContent = totalLinks;
+
+      if (links.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon">✂️</div>
+                <p>No links yet. Shorten your first URL above!</p>
+              </div>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = links.map(link => {
+        const shortUrl = `${BASE}/${link.shortCode}`;
+        const displayOriginal = link.originalUrl.length > 60
+          ? link.originalUrl.slice(0, 60) + '…'
+          : link.originalUrl;
+
+        return `
+          <tr>
+            <td class="original-url">
+              <span title="${escapeHtml(link.originalUrl)}">${escapeHtml(displayOriginal)}</span>
+            </td>
+            <td class="short-url-cell">
+              <a href="${escapeHtml(shortUrl)}" target="_blank" rel="noopener">${escapeHtml(shortUrl)}</a>
+            </td>
+            <td class="clicks">
+              <span class="click-badge">👆 ${link.clickCount}</span>
+            </td>
+            <td class="date-cell">${formatDate(link.createdAt)}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteLink('${escapeHtml(link.shortCode)}')">
+                🗑 Delete
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function deleteLink(shortCode) {
+      if (!confirm(`Delete /${shortCode}? This cannot be undone.`)) return;
+      try {
+        await fetch(`/api/links/${encodeURIComponent(shortCode)}`, { method: 'DELETE' });
+        await loadLinks();
+      } catch (err) {
+        alert('Failed to delete link.');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Allow Enter key in URL input to trigger shorten
+    document.getElementById('urlInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') shorten();
+    });
+
+    // Initial load
+    loadLinks();
+  </script>
+</body>
+</html>
