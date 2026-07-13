@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222535;
+      --border: #2e3248;
+      --accent: #6c63ff;
+      --accent-hover: #5a52e0;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --text: #e2e4f0;
+      --muted: #8b90a8;
+      --success: #22c55e;
+      --radius: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,.4);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6c63ff 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p { color: var(--muted); margin-top: .4rem; font-size: .95rem; }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-card .label {
+      font-size: .8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: .3rem;
+    }
+
+    /* ── Form ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 1.2rem; color: var(--text); }
+
+    .form-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .form-row input {
+      flex: 1 1 220px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: .95rem;
+      padding: .65rem 1rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-row input::placeholder { color: var(--muted); }
+    .form-row input:focus { border-color: var(--accent); }
+
+    .btn {
+      padding: .65rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: .3rem .7rem;
+      font-size: .8rem;
+    }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-copy {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .3rem .7rem;
+      font-size: .8rem;
+      border-radius: 6px;
+    }
+    .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-copy.copied { border-color: var(--success); color: var(--success); }
+
+    /* ── Result banner ── */
+    #result-box {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: .9rem 1.2rem;
+      margin-top: 1rem;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    #result-box.show { display: flex; }
+    #result-box .result-label { font-size: .8rem; color: var(--muted); }
+    #result-box a { color: var(--accent); text-decoration: none; font-weight: 600; word-break: break-all; }
+    #result-box a:hover { text-decoration: underline; }
+
+    /* ── Error ── */
+    #error-msg {
+      display: none;
+      color: var(--danger);
+      font-size: .88rem;
+      margin-top: .75rem;
+    }
+    #error-msg.show { display: block; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+    }
+    thead th {
+      text-align: left;
+      padding: .65rem 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: .75rem;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td { padding: .75rem 1rem; vertical-align: middle; }
+
+    .td-original { max-width: 240px; }
+    .td-original a {
+      color: var(--muted);
+      text-decoration: none;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .td-original a:hover { color: var(--text); }
+
+    .td-short a { color: var(--accent); text-decoration: none; white-space: nowrap; }
+    .td-short a:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .15rem .6rem;
+      font-size: .78rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .empty-state svg { display: block; margin: 0 auto 1rem; opacity: .3; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚡ URL Shortener</h1>
+    <p>Shorten long URLs instantly — track clicks in real time</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="value" id="stat-total-links">0</div>
+        <div class="label">Total Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-total-clicks">0</div>
+        <div class="label">Total Clicks</div>
+      </div>
+    </div>
+
+    <!-- Shorten form -->
+    <div class="card">
+      <h2>Shorten a URL</h2>
+      <div class="form-row">
+        <input type="url" id="url-input" placeholder="https://example.com/very/long/url" autocomplete="off" />
+        <input type="text" id="alias-input" placeholder="Custom alias (optional)" autocomplete="off" />
+        <button class="btn btn-primary" id="shorten-btn">Shorten</button>
+      </div>
+      <div id="error-msg"></div>
+      <div id="result-box">
+        <div>
+          <div class="result-label">Your short URL</div>
+          <a id="result-link" href="#" target="_blank"></a>
+        </div>
+        <button class="btn btn-copy" id="copy-btn">Copy</button>
+      </div>
+    </div>
+
+    <!-- Links table -->
+    <div class="card">
+      <h2>All Links</h2>
+      <div class="table-wrap">
+        <table id="links-table">
+          <thead>
+            <tr>
+              <th>Original URL</th>
+              <th>Short URL</th>
+              <th>Clicks</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="links-body"></tbody>
+        </table>
+      </div>
+      <div id="empty-state" class="empty-state" style="display:none">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        No links yet. Shorten your first URL above!
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const BASE = window.location.origin;
+
+    const urlInput    = document.getElementById('url-input');
+    const aliasInput  = document.getElementById('alias-input');
+    const shortenBtn  = document.getElementById('shorten-btn');
+    const errorMsg    = document.getElementById('error-msg');
+    const resultBox   = document.getElementById('result-box');
+    const resultLink  = document.getElementById('result-link');
+    const copyBtn     = document.getElementById('copy-btn');
+    const linksBody   = document.getElementById('links-body');
+    const emptyState  = document.getElementById('empty-state');
+    const statLinks   = document.getElementById('stat-total-links');
+    const statClicks  = document.getElementById('stat-total-clicks');
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('show');
+      resultBox.classList.remove('show');
+    }
+    function clearError() { errorMsg.classList.remove('show'); }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    async function loadLinks() {
+      const res = await fetch('/api/links');
+      const links = await res.json();
+
+      statLinks.textContent  = links.length;
+      statClicks.textContent = links.reduce((s, l) => s + l.clickCount, 0);
+
+      if (links.length === 0) {
+        linksBody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      linksBody.innerHTML = links.map(link => {
+        const shortUrl = `${BASE}/${link.shortCode}`;
+        return `<tr>
+          <td class="td-original"><a href="${link.originalUrl}" target="_blank" title="${link.originalUrl}">${link.originalUrl}</a></td>
+          <td class="td-short"><a href="${shortUrl}" target="_blank">${shortUrl}</a></td>
+          <td><span class="badge">${link.clickCount}</span></td>
+          <td style="white-space:nowrap;color:var(--muted)">${formatDate(link.createdAt)}</td>
+          <td><button class="btn btn-danger" data-code="${link.shortCode}">Delete</button></td>
+        </tr>`;
+      }).join('');
+
+      linksBody.querySelectorAll('.btn-danger').forEach(btn => {
+        btn.addEventListener('click', () => deleteLink(btn.dataset.code));
+      });
+    }
+
+    async function deleteLink(shortCode) {
+      await fetch(`/api/links/${shortCode}`, { method: 'DELETE' });
+      loadLinks();
+      // Hide result box if it was showing this link
+      if (resultLink.dataset.code === shortCode) resultBox.classList.remove('show');
+    }
+
+    shortenBtn.addEventListener('click', async () => {
+      clearError();
+      const url   = urlInput.value.trim();
+      const alias = aliasInput.value.trim();
+      if (!url) { showError('Please enter a URL.'); return; }
+
+      shortenBtn.disabled = true;
+      shortenBtn.textContent = 'Shortening…';
+
+      try {
+        const body = { url };
+        if (alias) body.customAlias = alias;
+
+        const res  = await fetch('/api/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+
+        if (!res.ok) { showError(data.error || 'Something went wrong.'); return; }
+
+        const shortUrl = `${BASE}/${data.shortCode}`;
+        resultLink.href        = shortUrl;
+        resultLink.textContent = shortUrl;
+        resultLink.dataset.code = data.shortCode;
+        resultBox.classList.add('show');
+        copyBtn.textContent = 'Copy';
+        copyBtn.classList.remove('copied');
+
+        urlInput.value  = '';
+        aliasInput.value = '';
+        loadLinks();
+      } catch {
+        showError('Network error — please try again.');
+      } finally {
+        shortenBtn.disabled = false;
+        shortenBtn.textContent = 'Shorten';
+      }
+    });
+
+    urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') shortenBtn.click(); });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(resultLink.href).then(() => {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('copied'); }, 2000);
+      });
+    });
+
+    // Initial load
+    loadLinks();
+  </script>
+</body>
+</html>
