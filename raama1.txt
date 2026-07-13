@@ -1,0 +1,11 @@
+Hello! This is raama1.txt
+
+This file contains some sample content to demonstrate file creation and version control.
+
+Key points:
+- Created as part of a demonstration
+- Contains plain text content
+- Will be committed to a feature branch
+- Subject to version control through Git
+
+Thank you for using this system!
