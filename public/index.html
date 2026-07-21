@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener</h1>
+            <p>Create short, shareable links in seconds</p>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalLinks">0</div>
+                <div class="stat-label">Total Links</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalClicks">0</div>
+                <div class="stat-label">Total Clicks</div>
+            </div>
+        </div>
+
+        <div class="shorten-form">
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    id="urlInput" 
+                    placeholder="Enter a long URL to shorten..."
+                    class="url-input"
+                >
+            </div>
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    id="customAlias" 
+                    placeholder="Custom alias (optional)"
+                    class="alias-input"
+                >
+            </div>
+            <button id="shortenBtn" class="shorten-btn">Shorten URL</button>
+        </div>
+
+        <div id="resultContainer" class="result-container" style="display: none;">
+            <div class="result-header">Your shortened URL:</div>
+            <div class="result-url-container">
+                <a id="shortUrl" href="#" target="_blank" class="short-url"></a>
+                <button id="copyBtn" class="copy-btn">Copy</button>
+            </div>
+            <div id="copyFeedback" class="copy-feedback"></div>
+        </div>
+
+        <div class="links-section">
+            <h2>Your Links</h2>
+            <div id="linksTableContainer">
+                <table class="links-table">
+                    <thead>
+                        <tr>
+                            <th>Original URL</th>
+                            <th>Short URL</th>
+                            <th>Clicks</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="linksTableBody">
+                        <tr class="empty-state">
+                            <td colspan="5">No links yet. Create your first short link above!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
