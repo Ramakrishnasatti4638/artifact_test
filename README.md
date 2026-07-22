@@ -1,28 +1,28 @@
-# 🔗 URL Shortener
+# Multi-Step Form Wizard
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A beautiful multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a smooth user experience with progress tracking, validation, and a modern design.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
-
 ### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+- **3-Step Wizard Flow**
+  - Step 1: Personal Details (name, email)
+  - Step 2: Plan Selection (Basic, Pro, Enterprise)
+  - Step 3: Confirmation Summary
+- **Visual Progress Bar** - Shows current step and completion percentage
+- **Step Indicators** - Visual circles showing progress through steps
+- **Navigation Controls** - Back and Next buttons with smart visibility
+- **Real-time Validation** - Instant feedback on form inputs
+- **Responsive Design** - Works beautifully on mobile and desktop
+- **Modern UI** - Gradient backgrounds, smooth animations, and clean layout
+- **Success Screen** - Confirmation message after successful submission
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### Backend
+- **Express Server** - Lightweight Node.js backend
+- **Form Submission API** - POST /api/submit endpoint
+- **Data Validation** - Server-side validation for all fields
+- **In-memory Storage** - Stores submissions (can be replaced with database)
+- **View Submissions API** - GET /api/submissions endpoint
 
 ## Installation
 
@@ -39,144 +39,131 @@ npm start
 
 Server runs on `http://localhost:3000`
 
-### Development mode (with auto-reload)
-```bash
-npm run dev
-```
+## How It Works
 
-### Run tests
-```bash
-npm test
-```
+### Step 1: Personal Details
+Users enter their full name and email address. The form validates:
+- Name must be at least 2 characters
+- Email must be in valid format (xxx@xxx.xxx)
+
+### Step 2: Choose Your Plan
+Users select from three pricing plans:
+- **Basic** - $9/month (5 projects, 10GB storage, email support)
+- **Pro** - $29/month (50 projects, 100GB storage, priority support, analytics)
+- **Enterprise** - $99/month (unlimited projects/storage, 24/7 support, custom integration)
+
+### Step 3: Confirmation
+Users review all their information before submitting. The summary displays:
+- Name and email from Step 1
+- Selected plan from Step 2
+
+### Progress Tracking
+- Visual progress bar fills as users advance through steps
+- Step indicators show completed, active, and upcoming steps
+- Percentage: Step 1 (33%), Step 2 (67%), Step 3 (100%)
+
+### Navigation
+- **Next Button** - Advances to next step after validation
+- **Back Button** - Returns to previous step (hidden on step 1)
+- **Submit Button** - Appears on final step to complete the form
 
 ## API Documentation
 
-### Create Shortened URL
-**POST /api/shorten**
+### Submit Form
+**POST /api/submit**
 
 Request body:
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "name": "John Doe",
+  "email": "john@example.com",
+  "plan": "pro"
 }
 ```
 
-Response (201):
+Response (200):
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "success": true,
+  "message": "Form submitted successfully!",
+  "data": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
 Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+- `400` - Missing required fields or invalid email format
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
+### Get All Submissions
+**GET /api/submissions**
 
 Response (200):
 ```json
 [
   {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
 
-Links are sorted by click count (descending).
-
-### Delete Link
-**DELETE /api/links/:shortCode**
-
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
-
-## Project Structure
+## File Structure
 
 ```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
-├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+├── server.js           # Express server
+├── package.json        # Dependencies
+└── public/
+    ├── index.html      # HTML structure
+    ├── styles.css      # Styling and animations
+    └── app.js          # Frontend JavaScript logic
 ```
 
 ## Technical Details
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Frontend Features
+- **State Management** - Tracks current step and form data
+- **Validation** - Client-side validation with error messages
+- **Animations** - Smooth fade-in transitions between steps
+- **Accessibility** - Semantic HTML with proper labels
+- **CSS Grid** - Responsive plan card layout
+- **CSS Gradients** - Beautiful purple gradient theme
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+### Backend Features
+- **Express.js** - Fast, minimalist web framework
+- **JSON API** - RESTful endpoints for form submission
+- **Error Handling** - Comprehensive validation and error responses
+- **CORS-ready** - Can be extended for cross-origin requests
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
+## Customization
 
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
-
-## Test Coverage
-
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
+### Change Colors
+Edit the gradient in `public/styles.css`:
+```css
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 ```
 
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+### Add More Steps
+1. Add step HTML in `index.html`
+2. Update `totalSteps` in `app.js`
+3. Add validation logic in `validateStep()`
+4. Update progress bar percentages in CSS
+
+### Add Database
+Replace the `submissions` array in `server.js` with your database of choice (MongoDB, PostgreSQL, etc.)
 
 ## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
 ## License
-
-ISC
+MIT
