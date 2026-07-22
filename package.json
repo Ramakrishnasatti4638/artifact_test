@@ -1,0 +1,12 @@
+{
+  "name": "toggle-switch-app",
+  "version": "1.0.0",
+  "description": "Toggle switch component with Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
