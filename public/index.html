@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener</h1>
+            <p>Shorten your long URLs into easy-to-share links</p>
+        </header>
+
+        <!-- Stats Summary -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalLinks">0</div>
+                <div class="stat-label">Total Links</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalClicks">0</div>
+                <div class="stat-label">Total Clicks</div>
+            </div>
+        </div>
+
+        <!-- URL Shortening Form -->
+        <div class="card">
+            <h2>Create Short Link</h2>
+            <form id="shortenForm">
+                <div class="form-group">
+                    <label for="urlInput">Enter URL</label>
+                    <input 
+                        type="text" 
+                        id="urlInput" 
+                        placeholder="https://example.com/very/long/url" 
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="customAlias">Custom Alias (optional)</label>
+                    <input 
+                        type="text" 
+                        id="customAlias" 
+                        placeholder="my-custom-link"
+                        pattern="[a-zA-Z0-9-_]+"
+                        title="Only alphanumeric characters, hyphens, and underscores allowed"
+                    >
+                </div>
+                <button type="submit" class="btn btn-primary">Shorten URL</button>
+            </form>
+
+            <!-- Result Display -->
+            <div id="result" class="result hidden">
+                <div class="result-content">
+                    <div class="result-label">Your shortened URL:</div>
+                    <div class="short-url-container">
+                        <a id="shortUrl" href="" target="_blank" class="short-url"></a>
+                        <button id="copyBtn" class="btn btn-copy" title="Copy to clipboard">
+                            📋 Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Display -->
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <!-- Links Table -->
+        <div class="card">
+            <h2>All Links</h2>
+            <div class="table-container">
+                <table id="linksTable">
+                    <thead>
+                        <tr>
+                            <th>Original URL</th>
+                            <th>Short Code</th>
+                            <th>Clicks</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="linksTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">No links yet. Create your first one above!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
