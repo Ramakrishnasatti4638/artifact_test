@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toggle Switch Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Toggle Switch Component</h1>
+    
+    <div class="toggle-demo">
+      <h2>Interactive Toggle</h2>
+      <div class="toggle-container">
+        <div class="toggle-switch" id="toggle" role="switch" aria-checked="false" tabindex="0">
+          <div class="toggle-slider"></div>
+        </div>
+        <div class="status-label" id="status">Status: OFF</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>State Demonstrations</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <h3>OFF State (Default)</h3>
+          <div class="toggle-switch off-state">
+            <div class="toggle-slider"></div>
+          </div>
+          <div class="status-label">Status: OFF</div>
+          <p class="description">Grey background, slider on the left</p>
+        </div>
+
+        <div class="demo-card">
+          <h3>ON State</h3>
+          <div class="toggle-switch on-state">
+            <div class="toggle-slider"></div>
+          </div>
+          <div class="status-label on">Status: ON</div>
+          <p class="description">Green background, slider on the right</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

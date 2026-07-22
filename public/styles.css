@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+h3 {
+  color: #555;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.toggle-demo {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.toggle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  width: 80px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 40px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch:hover {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.toggle-switch:focus {
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-slider {
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ON State */
+.toggle-switch.on {
+  background-color: #4caf50;
+}
+
+.toggle-switch.on .toggle-slider {
+  transform: translateX(40px);
+}
+
+/* Static demonstration states */
+.toggle-switch.off-state {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.toggle-switch.on-state {
+  background-color: #4caf50;
+  cursor: default;
+}
+
+.toggle-switch.on-state .toggle-slider {
+  transform: translateX(40px);
+}
+
+/* Status Label */
+.status-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.status-label.on {
+  color: #4caf50;
+}
+
+/* Demo Section */
+.demo-section {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.demo-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  border: 2px solid #e9ecef;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.demo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.demo-card .toggle-switch {
+  margin: 20px auto;
+}
+
+.description {
+  margin-top: 15px;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .toggle-demo,
+  .demo-section {
+    padding: 30px 20px;
+  }
+  
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
