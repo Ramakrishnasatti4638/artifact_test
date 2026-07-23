@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Step Form Wizard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="wizard-container">
+      <h1>Registration Form</h1>
+      
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-label">Personal</div>
+          </div>
+          <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-label">Preferences</div>
+          </div>
+          <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-label">Confirm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Steps -->
+      <form id="wizardForm">
+        <!-- Step 1: Personal Details -->
+        <div class="form-step active" data-step="1">
+          <h2>Personal Details</h2>
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            <span class="error-message" id="nameError"></span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required placeholder="your@email.com">
+            <span class="error-message" id="emailError"></span>
+          </div>
+        </div>
+
+        <!-- Step 2: Preferences -->
+        <div class="form-step" data-step="2">
+          <h2>Choose Your Plan</h2>
+          <div class="plan-options">
+            <label class="plan-card">
+              <input type="radio" name="plan" value="basic" required>
+              <div class="plan-content">
+                <h3>Basic</h3>
+                <div class="plan-price">$9.99<span>/month</span></div>
+                <ul class="plan-features">
+                  <li>✓ 5 Projects</li>
+                  <li>✓ 10 GB Storage</li>
+                  <li>✓ Email Support</li>
+                </ul>
+              </div>
+            </label>
+            
+            <label class="plan-card popular">
+              <div class="popular-badge">Most Popular</div>
+              <input type="radio" name="plan" value="pro" required>
+              <div class="plan-content">
+                <h3>Pro</h3>
+                <div class="plan-price">$19.99<span>/month</span></div>
+                <ul class="plan-features">
+                  <li>✓ 20 Projects</li>
+                  <li>✓ 50 GB Storage</li>
+                  <li>✓ Priority Support</li>
+                  <li>✓ Advanced Analytics</li>
+                </ul>
+              </div>
+            </label>
+            
+            <label class="plan-card">
+              <input type="radio" name="plan" value="enterprise" required>
+              <div class="plan-content">
+                <h3>Enterprise</h3>
+                <div class="plan-price">$49.99<span>/month</span></div>
+                <ul class="plan-features">
+                  <li>✓ Unlimited Projects</li>
+                  <li>✓ 500 GB Storage</li>
+                  <li>✓ 24/7 Support</li>
+                  <li>✓ Custom Features</li>
+                  <li>✓ Dedicated Manager</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+          <span class="error-message" id="planError"></span>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div class="form-step" data-step="3">
+          <h2>Confirmation</h2>
+          <div class="confirmation-summary">
+            <div class="summary-section">
+              <h3>Personal Details</h3>
+              <div class="summary-item">
+                <span class="summary-label">Name:</span>
+                <span class="summary-value" id="summaryName">-</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Email:</span>
+                <span class="summary-value" id="summaryEmail">-</span>
+              </div>
+            </div>
+            
+            <div class="summary-section">
+              <h3>Selected Plan</h3>
+              <div class="summary-item">
+                <span class="summary-label">Plan:</span>
+                <span class="summary-value" id="summaryPlan">-</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Price:</span>
+                <span class="summary-value" id="summaryPrice">-</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="confirmation-note">
+            <p>Please review your information above. Click "Submit" to complete your registration.</p>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="form-navigation">
+          <button type="button" id="prevBtn" class="btn btn-secondary" style="display: none;">
+            ← Back
+          </button>
+          <button type="button" id="nextBtn" class="btn btn-primary">
+            Next →
+          </button>
+          <button type="submit" id="submitBtn" class="btn btn-success" style="display: none;">
+            Submit
+          </button>
+        </div>
+      </form>
+
+      <!-- Success Message -->
+      <div class="success-message" id="successMessage" style="display: none;">
+        <div class="success-icon">✓</div>
+        <h2>Success!</h2>
+        <p>Your registration has been completed successfully.</p>
+        <button type="button" class="btn btn-primary" onclick="location.reload()">
+          Start Over
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
