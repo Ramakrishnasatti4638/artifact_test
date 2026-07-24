@@ -1,0 +1,16 @@
+{
+  "name": "multi-step-form-wizard",
+  "version": "1.0.0",
+  "description": "Multi-step form wizard with Express backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["express", "form", "wizard", "multi-step"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

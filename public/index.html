@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Step Form Wizard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="wizard-container">
+            <h1>Registration Form</h1>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Personal</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Plan</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="wizardForm">
+                <!-- Step 1: Personal Details -->
+                <div class="form-step active" data-step="1">
+                    <h2>Personal Details</h2>
+                    <p class="step-description">Please enter your basic information</p>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            placeholder="Enter your full name"
+                            required
+                        >
+                        <span class="error-message" id="name-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="your.email@example.com"
+                            required
+                        >
+                        <span class="error-message" id="email-error"></span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Choose Plan -->
+                <div class="form-step" data-step="2">
+                    <h2>Choose Your Plan</h2>
+                    <p class="step-description">Select the plan that works best for you</p>
+                    
+                    <div class="plan-options">
+                        <label class="plan-card">
+                            <input type="radio" name="plan" value="basic" required>
+                            <div class="plan-content">
+                                <div class="plan-header">
+                                    <h3>Basic</h3>
+                                    <div class="plan-price">$9<span>/month</span></div>
+                                </div>
+                                <ul class="plan-features">
+                                    <li>✓ 5 Projects</li>
+                                    <li>✓ 10GB Storage</li>
+                                    <li>✓ Email Support</li>
+                                </ul>
+                            </div>
+                        </label>
+
+                        <label class="plan-card popular">
+                            <div class="popular-badge">Most Popular</div>
+                            <input type="radio" name="plan" value="pro" required>
+                            <div class="plan-content">
+                                <div class="plan-header">
+                                    <h3>Pro</h3>
+                                    <div class="plan-price">$29<span>/month</span></div>
+                                </div>
+                                <ul class="plan-features">
+                                    <li>✓ Unlimited Projects</li>
+                                    <li>✓ 100GB Storage</li>
+                                    <li>✓ Priority Support</li>
+                                    <li>✓ Advanced Analytics</li>
+                                </ul>
+                            </div>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plan" value="enterprise" required>
+                            <div class="plan-content">
+                                <div class="plan-header">
+                                    <h3>Enterprise</h3>
+                                    <div class="plan-price">$99<span>/month</span></div>
+                                </div>
+                                <ul class="plan-features">
+                                    <li>✓ Unlimited Everything</li>
+                                    <li>✓ 1TB Storage</li>
+                                    <li>✓ 24/7 Support</li>
+                                    <li>✓ Custom Solutions</li>
+                                    <li>✓ Dedicated Manager</li>
+                                </ul>
+                            </div>
+                        </label>
+                    </div>
+                    <span class="error-message" id="plan-error"></span>
+                </div>
+
+                <!-- Step 3: Confirmation -->
+                <div class="form-step" data-step="3">
+                    <h2>Confirm Your Details</h2>
+                    <p class="step-description">Please review your information before submitting</p>
+                    
+                    <div class="confirmation-box">
+                        <div class="confirmation-item">
+                            <strong>Full Name:</strong>
+                            <span id="confirm-name">-</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <strong>Email:</strong>
+                            <span id="confirm-email">-</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <strong>Selected Plan:</strong>
+                            <span id="confirm-plan">-</span>
+                        </div>
+                    </div>
+
+                    <div class="success-message" id="success-message">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <circle cx="32" cy="32" r="32" fill="#10b981"/>
+                            <path d="M20 32L28 40L44 24" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h3>Successfully Submitted!</h3>
+                        <p>Thank you for your registration. We'll be in touch soon.</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button type="button" id="prevBtn" class="btn btn-secondary">Back</button>
+                    <button type="button" id="nextBtn" class="btn btn-primary">Next</button>
+                    <button type="submit" id="submitBtn" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

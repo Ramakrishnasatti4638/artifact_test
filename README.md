@@ -1,28 +1,41 @@
-# 🔗 URL Shortener
+# Multi-Step Form Wizard
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A beautiful and interactive multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a smooth user experience with progress tracking, validation, and animated transitions.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
-
 ### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+- **3-Step Form Flow**
+  - Step 1: Personal Details (name, email)
+  - Step 2: Plan Selection (Basic, Pro, Enterprise)
+  - Step 3: Confirmation Summary
+  
+- **Interactive Progress Bar**
+  - Visual step indicators with numbers
+  - Animated progress lines
+  - Active and completed states
+  
+- **User Experience**
+  - Smooth page transitions with animations
+  - Real-time form validation
+  - Error messages for invalid inputs
+  - Next/Back navigation buttons
+  - Success confirmation screen
+  
+- **Modern Design**
+  - Clean, professional UI
+  - Gradient background
+  - Card-based plan selection
+  - Responsive layout for mobile and desktop
+  - Hover effects and animations
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### Backend API
+- **POST /api/submit** - Submit form data with validation
+  - Validates required fields (name, email, plan)
+  - Email format validation
+  - Stores submissions in memory
+  
+- **GET /api/submissions** - Retrieve all form submissions
 
 ## Installation
 
@@ -39,144 +52,145 @@ npm start
 
 Server runs on `http://localhost:3000`
 
-### Development mode (with auto-reload)
+### Development mode
 ```bash
 npm run dev
 ```
 
-### Run tests
-```bash
-npm test
+## Project Structure
+
+```
+/
+├── server.js              # Express server and API routes
+├── public/
+│   ├── index.html        # Multi-step form HTML structure
+│   ├── styles.css        # Complete styling and animations
+│   └── script.js         # Form wizard logic and validation
+├── package.json
+└── README.md
 ```
 
 ## API Documentation
 
-### Create Shortened URL
-**POST /api/shorten**
+### Submit Form Data
+**POST /api/submit**
 
 Request body:
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "name": "John Doe",
+  "email": "john@example.com",
+  "plan": "pro"
 }
 ```
 
-Response (201):
+Success Response (200):
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "success": true,
+  "message": "Form submitted successfully!",
+  "data": {
+    "id": 1234567890,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
-Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+Error Responses:
+- `400` - Missing required fields or invalid email format
+```json
+{
+  "success": false,
+  "message": "All fields are required"
+}
+```
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
+### Get All Submissions
+**GET /api/submissions**
 
 Response (200):
 ```json
 [
   {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+    "id": 1234567890,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
 
-Links are sorted by click count (descending).
+## Form Validation
 
-### Delete Link
-**DELETE /api/links/:shortCode**
+### Step 1: Personal Details
+- **Name**: Required, minimum 2 characters
+- **Email**: Required, valid email format
 
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
+### Step 2: Plan Selection
+- **Plan**: Required, must select one of: basic, pro, enterprise
 
-## Project Structure
+## Available Plans
 
-```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
-├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
-```
+| Plan | Price | Features |
+|------|-------|----------|
+| **Basic** | $9/month | 5 Projects, 10GB Storage, Email Support |
+| **Pro** | $29/month | Unlimited Projects, 100GB Storage, Priority Support, Advanced Analytics |
+| **Enterprise** | $99/month | Unlimited Everything, 1TB Storage, 24/7 Support, Custom Solutions, Dedicated Manager |
 
-## Technical Details
+## Features Breakdown
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Progress Bar
+- Visual representation of current step
+- Shows completed, active, and upcoming steps
+- Animated transitions between steps
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+### Navigation
+- **Next Button**: Validates current step before proceeding
+- **Back Button**: Returns to previous step without validation
+- **Submit Button**: Appears only on final step
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
+### Validation
+- Real-time input validation
+- Clear error messages
+- Prevents progression with invalid data
+- Email format verification
+- Required field checking
 
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
+### Success State
+- Animated success confirmation
+- Checkmark icon animation
+- All progress indicators marked complete
+- Hidden form fields after submission
 
-## Test Coverage
+## Technologies Used
 
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
-
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+- **Backend**: Express.js 4.18.2
+- **Frontend**: Vanilla JavaScript (ES6+)
+- **Styling**: Pure CSS3 with animations
+- **No frameworks**: Lightweight and fast
 
 ## Browser Support
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Future Enhancements
+
+- Database integration (MongoDB/PostgreSQL)
+- Form data persistence in localStorage
+- Multi-page form with routing
+- File upload support
+- Payment integration
+- Email confirmation
+- Admin dashboard
+- Export submissions as CSV/PDF
 
 ## License
 
-ISC
+MIT
