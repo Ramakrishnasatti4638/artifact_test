@@ -1,28 +1,29 @@
-# 🔗 URL Shortener
+# Multi-Step Form Wizard
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A clean and responsive multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a visual progress bar, session-based data persistence, and smooth step transitions.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
+### 3-Step Registration Flow
+1. **Personal Details** - Name and email input with validation
+2. **Choose Plan** - Select from 3 subscription plans (Basic, Pro, Enterprise)
+3. **Confirmation** - Review and confirm all entered information
 
-### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+### UI/UX Features
+- **Visual Progress Bar** - Shows current step with completed/active/pending states
+- **Session Persistence** - Form data saved to server session between steps
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **Form Validation** - Client and server-side validation with error messages
+- **Smooth Animations** - Fade-in transitions between steps
+- **Navigation Controls** - Next/Back buttons with contextual visibility
+- **Plan Selection** - Interactive card-based plan selection with visual feedback
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### Backend Features
+- Express server with session management
+- RESTful API endpoints for each step
+- Session-based data persistence
+- Input validation on all steps
+- Form submission endpoint
 
 ## Installation
 
@@ -44,139 +45,178 @@ Server runs on `http://localhost:3000`
 npm run dev
 ```
 
-### Run tests
-```bash
-npm test
-```
+## API Endpoints
 
-## API Documentation
+### GET /api/form-data
+Retrieves current session's form data
 
-### Create Shortened URL
-**POST /api/shorten**
-
-Request body:
+**Response:**
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "step1": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "step2": {
+    "plan": "pro"
+  },
+  "currentStep": 2
 }
 ```
 
-Response (201):
+### POST /api/step1
+Save personal details (Step 1)
+
+**Request:**
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "name": "John Doe",
+  "email": "john@example.com"
 }
 ```
 
-Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
-
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
-
-Response (200):
+**Response:**
 ```json
-[
-  {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+{
+  "success": true,
+  "currentStep": 2
+}
+```
+
+### POST /api/step2
+Save plan selection (Step 2)
+
+**Request:**
+```json
+{
+  "plan": "pro"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "currentStep": 3
+}
+```
+
+### POST /api/submit
+Submit the complete form
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Form submitted successfully!",
+  "data": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T12:00:00.000Z"
   }
-]
+}
 ```
 
-Links are sorted by click count (descending).
+### POST /api/reset
+Reset form session and start over
 
-### Delete Link
-**DELETE /api/links/:shortCode**
-
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
+**Response:**
+```json
+{
+  "success": true
+}
+```
 
 ## Project Structure
 
 ```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
+/
+├── server.js           # Express server with session handling
 ├── package.json        # Dependencies and scripts
 ├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+│   ├── index.html     # Main HTML structure
+│   ├── styles.css     # Complete styling with animations
+│   └── script.js      # Client-side form logic
+└── README.md          # This file
 ```
 
-## Technical Details
+## Technologies Used
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+- **Backend**: Express.js, express-session
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Session Storage**: In-memory session storage (express-session)
+- **Styling**: Pure CSS with custom animations and responsive grid layout
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+## Features Breakdown
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
+### Progress Bar
+- 3 circular step indicators
+- Active step highlighted in purple
+- Completed steps shown in green with checkmark
+- Connecting lines between steps
+- Responsive labels
 
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
+### Step 1: Personal Details
+- Name input field
+- Email input field with validation
+- Required field validation
+- Email format validation
 
-## Test Coverage
+### Step 2: Choose Plan
+- 3 plan cards (Basic, Pro, Enterprise)
+- Radio button selection with visual feedback
+- "Popular" badge on Pro plan
+- Feature lists for each plan
+- Hover effects and selected state styling
 
+### Step 3: Confirmation
+- Summary of personal details
+- Selected plan with pricing
+- Submit button to complete registration
+- Success message with animation after submission
+- Start Over button after submission
+
+### Navigation
+- Back button (hidden on Step 1)
+- Next button (validates current step)
+- Submit button (only on Step 3)
+- Smooth step transitions
+- Error messages for validation failures
+
+## Customization
+
+### Modify Plans
+Edit the plan cards in `public/index.html` (Step 2 section) and update pricing in `public/script.js`:
+
+```javascript
+const planPricing = {
+    basic: '$9.99/month',
+    pro: '$19.99/month',
+    enterprise: '$49.99/month'
+};
 ```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
 
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+### Change Colors
+Update the CSS color scheme in `public/styles.css`:
+- Primary color: `#667eea`
+- Secondary color: `#764ba2`
+- Success color: `#4caf50`
+
+### Add More Steps
+1. Add new form step HTML in `index.html`
+2. Update `totalSteps` in `script.js`
+3. Add progress bar step in HTML
+4. Create corresponding API endpoint in `server.js`
+5. Add validation logic in `validateAndSaveStep()`
 
 ## Browser Support
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
 ## License
 
-ISC
+MIT
