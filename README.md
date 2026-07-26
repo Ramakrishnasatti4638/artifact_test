@@ -1,28 +1,26 @@
-# 🔗 URL Shortener
+# 📝 Multi-Step Form Wizard
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A modern, responsive multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a clean UI with progress tracking, validation, and smooth transitions.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
-
 ### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+- **3-Step Form Flow**
+  - Step 1: Personal details (name, email)
+  - Step 2: Plan selection (Basic, Pro, Enterprise)
+  - Step 3: Confirmation summary
+- **Interactive Progress Bar** - Visual indicator showing current step and completion
+- **Real-time Validation** - Instant feedback on form inputs
+- **Plan Cards** - Beautiful, interactive plan selection with hover effects
+- **Smooth Animations** - Fade transitions between steps
+- **Responsive Design** - Works seamlessly on mobile and desktop
+- **Next/Back Navigation** - Easy step navigation with validation
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### Backend
+- **POST /api/submit** - Submit form data with validation
+- **GET /api/submissions** - Retrieve all submissions
+- In-memory storage for form submissions
+- Input validation and error handling
 
 ## Installation
 
@@ -44,138 +42,123 @@ Server runs on `http://localhost:3000`
 npm run dev
 ```
 
-### Run tests
-```bash
-npm test
-```
+## Form Structure
+
+### Step 1: Personal Details
+- **Full Name** - Required, minimum 2 characters
+- **Email Address** - Required, must be valid email format
+
+### Step 2: Choose Your Plan
+Three plan options with detailed features:
+- **Basic** ($9.99/month) - 10 Projects, 5GB Storage, Email Support
+- **Pro** ($19.99/month) - Unlimited Projects, 50GB Storage, Priority Support, Advanced Analytics
+- **Enterprise** ($49.99/month) - Unlimited Everything, 500GB Storage, 24/7 Support, Custom Integration
+
+### Step 3: Confirmation
+- Review all entered information
+- Submit or go back to edit
+- Success message with auto-reset
 
 ## API Documentation
 
-### Create Shortened URL
-**POST /api/shorten**
+### Submit Form Data
+**POST /api/submit**
 
 Request body:
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "name": "John Doe",
+  "email": "john@example.com",
+  "plan": "pro"
 }
 ```
 
 Response (201):
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "success": true,
+  "submission": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
 Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+- `400` - All fields are required
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
+### Get All Submissions
+**GET /api/submissions**
 
 Response (200):
 ```json
 [
   {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
 
-Links are sorted by click count (descending).
-
-### Delete Link
-**DELETE /api/links/:shortCode**
-
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
-
 ## Project Structure
 
 ```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
+.
+├── server.js           # Express server
 ├── package.json        # Dependencies and scripts
 ├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+│   ├── index.html     # Main HTML file with form wizard
+│   ├── styles.css     # Complete styling and animations
+│   └── script.js      # Form logic, validation, and API calls
+└── README.md          # Documentation
 ```
 
-## Technical Details
+## Features Breakdown
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Progress Tracking
+- Visual progress bar that updates based on current step
+- Step indicators with active/completed states
+- Smooth width transitions on step changes
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+### Validation
+- Real-time validation on input fields
+- Error messages displayed below inputs
+- Visual feedback with border colors
+- Prevents progression with invalid data
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
+### Plan Selection
+- Radio button-based plan cards
+- Visual selection indicator (checkmark)
+- Hover effects for better UX
+- Featured plan highlighting
 
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
+### User Experience
+- Smooth fade-in animations between steps
+- Clear navigation buttons (Next/Back/Submit)
+- Success message with icon animation
+- Auto-reset after successful submission
+- Mobile-responsive design
 
-## Test Coverage
+## Technologies Used
 
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
-
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+- **Backend**: Express.js
+- **Frontend**: Vanilla JavaScript (ES6+)
+- **Styling**: Pure CSS with modern features (Grid, Flexbox, Animations)
+- **No external UI frameworks** - Lightweight and fast
 
 ## Browser Support
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+Works on all modern browsers:
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers
 
 ## License
 
