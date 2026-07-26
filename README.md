@@ -1,33 +1,35 @@
-# Multi-Step Form Wizard
+# 🧙 Multi-Step Form Wizard
 
-A modern, responsive multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a beautiful UI with progress tracking, form validation, and smooth animations.
+A modern, interactive multi-step form wizard built with Express, HTML, CSS, and vanilla JavaScript. Features a beautiful UI with progress tracking, form validation, and smooth transitions.
 
-## Features
+## ✨ Features
 
-### 🎨 Frontend
-- **3-Step Wizard Flow**
-  - Step 1: Personal Details (name, email)
-  - Step 2: Plan Selection (Basic, Pro, Enterprise)
-  - Step 3: Confirmation Summary
-- **Interactive Progress Bar** - Visual step indicator with completion states
-- **Form Validation** - Real-time validation with error messages
-- **Smooth Animations** - Fade-in transitions between steps
-- **Responsive Design** - Works perfectly on mobile and desktop
-- **Modern UI** - Clean, professional design with gradient background
+### 3-Step Wizard Flow
+- **Step 1: Personal Details** - Name and email input with validation
+- **Step 2: Plan Selection** - Choose from 3 pricing plans (Basic, Pro, Enterprise)
+- **Step 3: Confirmation** - Review all information before submission
 
-### ⚙️ Backend
-- **Express Server** - Lightweight Node.js backend
-- **REST API** - Clean API endpoints for form submission
-- **Data Storage** - In-memory storage for form submissions
-- **Validation** - Server-side validation for all fields
+### User Experience
+- ✅ Visual progress bar with step indicators
+- ✅ Next/Back navigation buttons
+- ✅ Real-time form validation
+- ✅ Responsive design (mobile & desktop)
+- ✅ Smooth animations and transitions
+- ✅ Success confirmation page
+- ✅ "Start Over" functionality
 
-## Installation
+### Backend API
+- **POST /api/submit** - Submit form data with validation
+- **GET /api/submissions** - Retrieve all form submissions
+- In-memory data storage
+
+## 🚀 Installation
 
 ```bash
 npm install
 ```
 
-## Usage
+## 📖 Usage
 
 ### Start the server
 ```bash
@@ -41,7 +43,50 @@ Server runs on `http://localhost:3000`
 npm run dev
 ```
 
-## API Endpoints
+## 🎨 Design Features
+
+### Progress Bar
+- Dynamic step indicators (1, 2, 3)
+- Active state highlighting
+- Completed step checkmarks
+- Progress lines between steps
+
+### Form Validation
+- Required field validation
+- Email format validation
+- Plan selection validation
+- Real-time error messages
+
+### Plan Cards
+- Three pricing tiers with features
+- "Most Popular" badge on Pro plan
+- Hover effects and animations
+- Click-to-select functionality
+
+### Confirmation Page
+- Clean summary of all entered data
+- Review before final submission
+- Edit capability via Back button
+
+### Success Page
+- Animated success icon
+- Personalized confirmation message
+- "Start Over" to reset the wizard
+
+## 📁 Project Structure
+
+```
+artifact_test/
+├── server.js              # Express server and API endpoints
+├── package.json           # Dependencies and scripts
+├── public/
+│   ├── index.html        # Multi-step form HTML structure
+│   ├── styles.css        # Complete styling with animations
+│   └── script.js         # Form wizard logic and validation
+└── README.md             # This file
+```
+
+## 🔧 API Endpoints
 
 ### Submit Form
 **POST /api/submit**
@@ -49,8 +94,8 @@ npm run dev
 Request body:
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
+  "name": "Jane Smith",
+  "email": "jane@example.com",
   "plan": "pro"
 }
 ```
@@ -62,8 +107,8 @@ Response (201):
   "message": "Form submitted successfully!",
   "data": {
     "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
     "plan": "pro",
     "submittedAt": "2024-01-01T00:00:00.000Z"
   }
@@ -71,7 +116,7 @@ Response (201):
 ```
 
 Error responses:
-- `400` - All fields are required
+- `400` - Missing required fields
 
 ### Get All Submissions
 **GET /api/submissions**
@@ -81,95 +126,93 @@ Response (200):
 [
   {
     "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
     "plan": "pro",
     "submittedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
 
-## Project Structure
+## 🎯 Pricing Plans
 
-```
-.
-├── server.js           # Express server and API endpoints
-├── package.json        # Project dependencies
-├── public/             # Frontend static files
-│   ├── index.html      # Main HTML structure
-│   ├── styles.css      # Responsive CSS styling
-│   └── script.js       # Form wizard logic
-└── README.md           # Documentation
-```
+### Basic - $9.99/month
+- 10 GB Storage
+- Basic Support
+- 1 User
 
-## How It Works
+### Pro - $19.99/month (Most Popular)
+- 100 GB Storage
+- Priority Support
+- 5 Users
 
-### Step Navigation
-1. **Next Button**: Validates current step before advancing
-2. **Back Button**: Returns to previous step (hidden on step 1)
-3. **Submit Button**: Only appears on final step
+### Enterprise - $49.99/month
+- Unlimited Storage
+- 24/7 Support
+- Unlimited Users
 
-### Validation Rules
-- **Name**: Required, cannot be empty
-- **Email**: Required, must be valid email format
-- **Plan**: Required, must select one of three options
+## 💻 Technical Details
 
-### User Flow
-1. User enters personal details (name, email)
-2. Validates and proceeds to plan selection
-3. Chooses from Basic ($9.99), Pro ($19.99), or Enterprise ($49.99)
-4. Reviews all information on confirmation page
-5. Submits form and sees success message
-6. Can reset and start over
+### Frontend
+- Pure vanilla JavaScript (no frameworks)
+- CSS Grid and Flexbox for layouts
+- CSS animations and transitions
+- Responsive design with media queries
+- Form validation with custom error handling
 
-## Features Breakdown
+### Backend
+- Express.js server
+- JSON request/response handling
+- In-memory data storage
+- RESTful API design
 
-### Progress Bar
-- Visual representation of current step
-- Active step highlighted in purple
-- Completed steps marked in green
-- Step labels for clarity
+### Key JavaScript Features
+- State management for wizard flow
+- Step navigation logic
+- Form validation functions
+- Async/await for API calls
+- Event delegation for plan selection
+- Dynamic DOM updates
 
-### Plan Selection
-- Three visually distinct plan cards
-- "Most Popular" badge on Pro plan
-- Hover effects for better UX
-- Radio button selection with full card click area
+## 🎨 Color Scheme
 
-### Confirmation Page
-- Organized summary of all entered data
-- Clear section headers
-- Easy-to-read layout
-- Final review before submission
+- Primary: `#667eea` (Purple)
+- Secondary: `#764ba2` (Darker Purple)
+- Success: `#4caf50` (Green)
+- Error: `#f44336` (Red)
+- Background: Linear gradient from `#667eea` to `#764ba2`
 
-### Success State
-- Animated checkmark icon
-- Confirmation message with user's email
-- "Start Over" button to reset form
+## 📱 Responsive Design
 
-## Styling Highlights
+The wizard is fully responsive and works seamlessly on:
+- Desktop (800px+ width)
+- Tablets (768px - 799px)
+- Mobile phones (< 768px)
 
-- **Gradient Background**: Purple gradient for modern look
-- **Card Design**: Clean white card with rounded corners
-- **Color Scheme**: Purple (#667eea) primary, green (#4caf50) success
-- **Responsive**: Mobile-first design with breakpoints
-- **Animations**: Smooth fade-in transitions between steps
+Mobile optimizations include:
+- Stacked plan cards (single column)
+- Full-width buttons
+- Adjusted spacing and font sizes
+- Touch-friendly interactive elements
 
-## Technologies Used
+## 🛠️ Customization
 
-- **Backend**: Express.js 4.18.2
-- **Frontend**: Vanilla JavaScript (ES6+)
-- **Styling**: CSS3 with Flexbox and Grid
-- **Development**: Nodemon for auto-reload
+### Adding More Steps
+1. Add a new step in `index.html` with `data-step="4"`
+2. Update `totalSteps` in `script.js`
+3. Add validation logic in `validateStep()`
+4. Update progress bar HTML with new step indicator
 
-## Browser Support
+### Changing Plans
+Edit the plan cards in `index.html` and update the `planNames` object in `script.js`
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers
+### Styling
+Modify `styles.css` to change colors, fonts, spacing, or animations
 
-## License
+## 📝 License
 
 MIT
+
+## 🤝 Contributing
+
+Feel free to fork, modify, and use this project for your own purposes!

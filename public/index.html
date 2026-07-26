@@ -36,132 +36,84 @@
           <h2>Personal Details</h2>
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
-              placeholder="Enter your full name"
-              required
-            >
-            <span class="error-message" id="name-error"></span>
+            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            <span class="error-message" id="nameError"></span>
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              placeholder="Enter your email"
-              required
-            >
-            <span class="error-message" id="email-error"></span>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <span class="error-message" id="emailError"></span>
           </div>
         </div>
 
-        <!-- Step 2: Preferences -->
+        <!-- Step 2: Plan Selection -->
         <div class="form-step" data-step="2">
           <h2>Choose Your Plan</h2>
-          <div class="plan-container">
-            <div class="plan-option">
-              <input 
-                type="radio" 
-                id="basic" 
-                name="plan" 
-                value="basic"
-                required
-              >
-              <label for="basic" class="plan-label">
-                <div class="plan-header">
-                  <h3>Basic</h3>
-                  <p class="plan-price">$9.99/mo</p>
-                </div>
-                <ul class="plan-features">
-                  <li>✓ 5 Projects</li>
-                  <li>✓ 10GB Storage</li>
-                  <li>✓ Email Support</li>
+          <div class="plans-container">
+            <div class="plan-card" data-plan="basic">
+              <input type="radio" id="basic" name="plan" value="basic" required>
+              <label for="basic">
+                <h3>Basic</h3>
+                <div class="price">$9.99<span>/month</span></div>
+                <ul class="features">
+                  <li>✓ 10 GB Storage</li>
+                  <li>✓ Basic Support</li>
+                  <li>✓ 1 User</li>
                 </ul>
               </label>
             </div>
-
-            <div class="plan-option">
-              <input 
-                type="radio" 
-                id="pro" 
-                name="plan" 
-                value="pro"
-              >
-              <label for="pro" class="plan-label popular">
-                <div class="plan-badge">Most Popular</div>
-                <div class="plan-header">
-                  <h3>Pro</h3>
-                  <p class="plan-price">$19.99/mo</p>
-                </div>
-                <ul class="plan-features">
-                  <li>✓ 25 Projects</li>
-                  <li>✓ 50GB Storage</li>
+            <div class="plan-card popular" data-plan="pro">
+              <div class="popular-badge">Most Popular</div>
+              <input type="radio" id="pro" name="plan" value="pro" required>
+              <label for="pro">
+                <h3>Pro</h3>
+                <div class="price">$19.99<span>/month</span></div>
+                <ul class="features">
+                  <li>✓ 100 GB Storage</li>
                   <li>✓ Priority Support</li>
-                  <li>✓ Advanced Analytics</li>
+                  <li>✓ 5 Users</li>
                 </ul>
               </label>
             </div>
-
-            <div class="plan-option">
-              <input 
-                type="radio" 
-                id="enterprise" 
-                name="plan" 
-                value="enterprise"
-              >
-              <label for="enterprise" class="plan-label">
-                <div class="plan-header">
-                  <h3>Enterprise</h3>
-                  <p class="plan-price">$49.99/mo</p>
-                </div>
-                <ul class="plan-features">
-                  <li>✓ Unlimited Projects</li>
-                  <li>✓ 200GB Storage</li>
-                  <li>✓ 24/7 Phone Support</li>
-                  <li>✓ Custom Integrations</li>
-                  <li>✓ Dedicated Account Manager</li>
+            <div class="plan-card" data-plan="enterprise">
+              <input type="radio" id="enterprise" name="plan" value="enterprise" required>
+              <label for="enterprise">
+                <h3>Enterprise</h3>
+                <div class="price">$49.99<span>/month</span></div>
+                <ul class="features">
+                  <li>✓ Unlimited Storage</li>
+                  <li>✓ 24/7 Support</li>
+                  <li>✓ Unlimited Users</li>
                 </ul>
               </label>
             </div>
           </div>
-          <span class="error-message" id="plan-error"></span>
+          <span class="error-message" id="planError"></span>
         </div>
 
         <!-- Step 3: Confirmation -->
         <div class="form-step" data-step="3">
-          <h2>Confirm Your Details</h2>
-          <div class="confirmation-container">
+          <h2>Confirm Your Information</h2>
+          <div class="confirmation-content">
             <div class="confirmation-section">
-              <h3>Personal Information</h3>
-              <div class="confirmation-item">
-                <span class="label">Name:</span>
-                <span class="value" id="confirm-name"></span>
-              </div>
-              <div class="confirmation-item">
-                <span class="label">Email:</span>
-                <span class="value" id="confirm-email"></span>
-              </div>
+              <h3>Personal Details</h3>
+              <p><strong>Name:</strong> <span id="confirmName"></span></p>
+              <p><strong>Email:</strong> <span id="confirmEmail"></span></p>
             </div>
-
             <div class="confirmation-section">
               <h3>Selected Plan</h3>
-              <div class="confirmation-item">
-                <span class="label">Plan:</span>
-                <span class="value plan-name" id="confirm-plan"></span>
-              </div>
+              <p><strong>Plan:</strong> <span id="confirmPlan"></span></p>
             </div>
           </div>
         </div>
 
         <!-- Success Message -->
-        <div class="success-message" id="successMessage">
+        <div class="form-step success-message" data-step="success">
           <div class="success-icon">✓</div>
           <h2>Registration Complete!</h2>
-          <p>Thank you for signing up. We've sent a confirmation email to <span id="success-email"></span></p>
-          <button type="button" class="btn btn-primary" onclick="resetForm()">Start Over</button>
+          <p>Thank you for registering, <strong id="successName"></strong>!</p>
+          <p>A confirmation email has been sent to <strong id="successEmail"></strong>.</p>
+          <button type="button" class="btn btn-primary" id="startOverBtn">Start Over</button>
         </div>
 
         <!-- Navigation Buttons -->
