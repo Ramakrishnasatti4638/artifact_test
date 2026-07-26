@@ -1,28 +1,28 @@
-# 🔗 URL Shortener
+# 🧙 Multi-Step Form Wizard
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A beautiful multi-step form wizard built with Express.js and vanilla JavaScript. Features a smooth user experience with progress tracking, validation, and a modern responsive design.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
+### 🎯 Three-Step Process
+1. **Personal Details** - Collect name and email with validation
+2. **Plan Selection** - Choose from Basic, Pro, or Enterprise plans with visual cards
+3. **Confirmation** - Review and submit with a summary view
 
-### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+### ✨ User Experience
+- **Progress Bar** - Visual indicator showing completion percentage
+- **Step Indicators** - Numbered circles showing current, completed, and upcoming steps
+- **Navigation** - Back/Next buttons for easy step navigation
+- **Validation** - Real-time form validation with helpful error messages
+- **Success Animation** - Animated success screen on form submission
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### 🎨 Design Features
+- Modern gradient backgrounds
+- Smooth animations and transitions
+- Card-based plan selection with hover effects
+- Clean, accessible interface
+- Professional typography and spacing
 
 ## Installation
 
@@ -44,139 +44,148 @@ Server runs on `http://localhost:3000`
 npm run dev
 ```
 
-### Run tests
-```bash
-npm test
+## Project Structure
+
+```
+.
+├── server.js           # Express server with API endpoints
+├── package.json        # Dependencies and scripts
+└── public/
+    ├── index.html      # Multi-step form HTML structure
+    ├── styles.css      # Complete styling and animations
+    └── script.js       # Form wizard logic and validation
 ```
 
-## API Documentation
+## API Endpoints
 
-### Create Shortened URL
-**POST /api/shorten**
+### Submit Form Data
+**POST /api/submit**
 
 Request body:
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "name": "John Doe",
+  "email": "john@example.com",
+  "plan": "pro"
 }
 ```
 
 Response (201):
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "message": "Form submitted successfully",
+  "submission": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
 Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+- `400` - Missing required fields
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
+### Get All Submissions
+**GET /api/submissions**
 
 Response (200):
 ```json
 [
   {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "plan": "pro",
+    "submittedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
 
-Links are sorted by click count (descending).
+## Features Breakdown
 
-### Delete Link
-**DELETE /api/links/:shortCode**
+### Step 1: Personal Details
+- **Name input** with required validation
+- **Email input** with format validation
+- Error messages displayed inline
+- Real-time error clearing on input
 
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
+### Step 2: Plan Selection
+- Three plan options: Basic ($9), Pro ($29), Enterprise ($99)
+- Visual card-based selection with icons
+- Feature lists for each plan
+- Hover effects and selected state indicators
+- Required field validation
 
-## Project Structure
+### Step 3: Confirmation
+- Summary of all entered information
+- Organized sections for Personal Info and Plan
+- Review prompt before final submission
+- Submit button to complete the process
 
-```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
-├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
-```
+### Progress Tracking
+- **Progress bar** fills based on current step (33%, 66%, 100%)
+- **Step indicators** show:
+  - Active step (highlighted with gradient)
+  - Completed steps (green checkmark)
+  - Upcoming steps (gray)
+- Smooth transitions between states
+
+### Navigation
+- **Next button** - Validates current step before advancing
+- **Back button** - Returns to previous step (hidden on first step)
+- **Submit button** - Appears only on final step
+- Button states update automatically based on current step
+
+### Validation
+- Name: Required, cannot be empty
+- Email: Required, must be valid email format
+- Plan: Required, must select one option
+- Errors display below fields with red styling
+- Errors clear automatically when user starts typing
+
+### Success Screen
+- Animated checkmark icon
+- Success message
+- "Start Over" button to reset form
+- Smooth fade-in animation
 
 ## Technical Details
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Frontend
+- **Vanilla JavaScript** - No framework dependencies
+- **CSS3** - Modern animations and gradients
+- **Responsive Grid** - Plan cards adapt to screen size
+- **Fetch API** - Async form submission
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
-
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
-
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
-
-## Test Coverage
-
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
-
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+### Backend
+- **Express.js** - Minimal, fast server
+- **JSON storage** - In-memory data persistence
+- **RESTful API** - Clean endpoint design
 
 ## Browser Support
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+## Customization
+
+### Changing Plan Options
+Edit the plan cards in `public/index.html` and update the `planNames` object in `public/script.js`.
+
+### Styling
+All styles are in `public/styles.css`. Key color variables:
+- Primary gradient: `#667eea` to `#764ba2`
+- Success color: `#4caf50`
+- Error color: `#f44336`
+
+### Adding More Steps
+1. Add a new `.form-step` section in `index.html`
+2. Update `totalSteps` constant in `script.js`
+3. Add validation logic in `validateCurrentStep()`
+4. Update progress indicators
 
 ## License
-
 ISC
