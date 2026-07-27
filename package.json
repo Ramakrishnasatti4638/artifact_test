@@ -1,0 +1,19 @@
+{
+  "name": "artifact_test",
+  "version": "1.0.0",
+  "description": "A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "PLAYWRIGHT_BROWSERS_PATH=/home/user/.playwright npx playwright test",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.0"
+  }
+}
