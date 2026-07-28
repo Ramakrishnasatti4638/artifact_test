@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>💰 Expense Tracker</h1>
+      <p class="subtitle">Keep track of your spending</p>
+    </header>
+
+    <section class="add-expense">
+      <h2>Add New Expense</h2>
+      <form id="expense-form">
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" placeholder="e.g., Grocery shopping" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="amount">Amount ($)</label>
+            <input type="number" id="amount" name="amount" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Add Expense</button>
+      </form>
+    </section>
+
+    <section class="expenses-list">
+      <h2>Recent Expenses</h2>
+      <div class="table-container">
+        <table id="expenses-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="expenses-body">
+            <!-- Expenses will be loaded here -->
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="2"><strong>Total</strong></td>
+              <td><strong id="total-amount">$0.00</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
