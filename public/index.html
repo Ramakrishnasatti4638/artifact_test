@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #6366f1;
+      --accent-hover: #4f52d4;
+      --accent-soft: rgba(99, 102, 241, 0.12);
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #22c55e;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    header p { color: var(--muted); margin-top: 0.4rem; font-size: 0.95rem; }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Shorten form */
+    .form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .form-row input {
+      flex: 1 1 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-row input:focus { border-color: var(--accent); }
+    .form-row input::placeholder { color: var(--muted); }
+
+    .btn {
+      padding: 0.65rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-danger  { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    /* Result box */
+    #result-box {
+      display: none;
+      margin-top: 1.2rem;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    #result-box.show { display: flex; }
+    #result-link {
+      flex: 1;
+      color: #a78bfa;
+      font-weight: 600;
+      font-size: 0.97rem;
+      word-break: break-all;
+      text-decoration: none;
+    }
+    #result-link:hover { text-decoration: underline; }
+    .copy-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: var(--accent-hover); }
+    .copy-btn.copied { background: var(--success); }
+
+    /* Error */
+    #error-msg {
+      display: none;
+      margin-top: 0.8rem;
+      color: var(--danger);
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-card .label { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+
+    /* Section titles */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead th {
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 0.75rem 0.8rem; vertical-align: middle; }
+
+    .url-cell { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .url-cell a { color: var(--muted); text-decoration: none; }
+    .url-cell a:hover { color: var(--text); text-decoration: underline; }
+    .short-link { color: #a78bfa; text-decoration: none; font-weight: 500; }
+    .short-link:hover { text-decoration: underline; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .date-cell { color: var(--muted); white-space: nowrap; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .empty-state span { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>⚡ URL Shortener</h1>
+    <p>Shorten long links and track their performance</p>
+  </header>
+
+  <!-- Shorten form -->
+  <div class="card">
+    <div class="section-title">Shorten a URL</div>
+    <div class="form-row">
+      <input id="url-input" type="url" placeholder="https://example.com/very/long/url" />
+      <input id="alias-input" type="text" placeholder="Custom alias (optional)" style="max-width:200px" />
+      <button class="btn btn-primary" onclick="shortenUrl()">Shorten</button>
+    </div>
+    <div id="error-msg"></div>
+    <div id="result-box">
+      <a id="result-link" href="#" target="_blank" rel="noopener"></a>
+      <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="value" id="stat-total-links">0</div>
+      <div class="label">Total Links</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" id="stat-total-clicks">0</div>
+      <div class="label">Total Clicks</div>
+    </div>
+  </div>
+
+  <!-- Links table -->
+  <div class="card">
+    <div class="section-title">All Links</div>
+    <div class="table-wrap">
+      <table id="links-table">
+        <thead>
+          <tr>
+            <th>Original URL</th>
+            <th>Short URL</th>
+            <th>Clicks</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="links-tbody">
+          <tr><td colspan="5"><div class="empty-state"><span>🔗</span>No links yet. Shorten your first URL above!</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentShortUrl = '';
+
+  async function shortenUrl() {
+    const urlInput = document.getElementById('url-input');
+    const aliasInput = document.getElementById('alias-input');
+    const errorMsg = document.getElementById('error-msg');
+    const resultBox = document.getElementById('result-box');
+
+    errorMsg.style.display = 'none';
+    resultBox.classList.remove('show');
+
+    const url = urlInput.value.trim();
+    const customAlias = aliasInput.value.trim();
+
+    if (!url) {
+      showError('Please enter a URL.');
+      return;
+    }
+
+    const body = { url };
+    if (customAlias) body.customAlias = customAlias;
+
+    try {
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || 'Something went wrong.');
+        return;
+      }
+
+      currentShortUrl = `${location.origin}/${data.shortCode}`;
+      const link = document.getElementById('result-link');
+      link.href = currentShortUrl;
+      link.textContent = currentShortUrl;
+
+      const copyBtn = document.getElementById('copy-btn');
+      copyBtn.textContent = 'Copy';
+      copyBtn.classList.remove('copied');
+
+      resultBox.classList.add('show');
+      urlInput.value = '';
+      aliasInput.value = '';
+
+      await loadLinks();
+    } catch (err) {
+      showError('Network error. Please try again.');
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function copyLink() {
+    if (!currentShortUrl) return;
+    navigator.clipboard.writeText(currentShortUrl).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  async function loadLinks() {
+    try {
+      const res = await fetch('/api/links');
+      const links = await res.json();
+
+      const totalLinks = links.length;
+      const totalClicks = links.reduce((sum, l) => sum + l.clickCount, 0);
+      document.getElementById('stat-total-links').textContent = totalLinks;
+      document.getElementById('stat-total-clicks').textContent = totalClicks;
+
+      const tbody = document.getElementById('links-tbody');
+
+      if (links.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><span>🔗</span>No links yet. Shorten your first URL above!</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = links.map(link => {
+        const shortUrl = `${location.origin}/${link.shortCode}`;
+        const date = new Date(link.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        const displayUrl = link.originalUrl.length > 50 ? link.originalUrl.slice(0, 50) + '…' : link.originalUrl;
+
+        return `
+          <tr>
+            <td class="url-cell"><a href="${escHtml(link.originalUrl)}" target="_blank" rel="noopener" title="${escHtml(link.originalUrl)}">${escHtml(displayUrl)}</a></td>
+            <td><a class="short-link" href="${escHtml(shortUrl)}" target="_blank" rel="noopener">${escHtml(shortUrl)}</a></td>
+            <td><span class="badge">↗ ${link.clickCount}</span></td>
+            <td class="date-cell">${date}</td>
+            <td><button class="btn btn-danger" onclick="deleteLink('${escHtml(link.shortCode)}')">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Failed to load links:', err);
+    }
+  }
+
+  async function deleteLink(shortCode) {
+    if (!confirm(`Delete the link "/${shortCode}"?`)) return;
+    try {
+      const res = await fetch(`/api/links/${encodeURIComponent(shortCode)}`, { method: 'DELETE' });
+      if (res.ok) await loadLinks();
+      else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete link.');
+      }
+    } catch (err) {
+      alert('Network error.');
+    }
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Allow Enter key on inputs
+  document.addEventListener('DOMContentLoaded', () => {
+    ['url-input', 'alias-input'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') shortenUrl();
+      });
+    });
+    loadLinks();
+  });
+</script>
+</body>
+</html>
