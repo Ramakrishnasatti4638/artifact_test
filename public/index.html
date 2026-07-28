@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .value {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+
+    .shorten-section {
+      margin-bottom: 40px;
+    }
+
+    .shorten-section h2 {
+      font-size: 1.3rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group input::placeholder {
+      color: #999;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      padding: 12px 18px;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #ff6b6b;
+      color: white;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
+    .btn-danger:hover {
+      background: #ff5252;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result-section {
+      display: none;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .result-section.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-item {
+      margin-bottom: 15px;
+    }
+
+    .result-item label {
+      display: block;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .result-item .value {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .result-item input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      background: white;
+    }
+
+    .result-item a {
+      color: #667eea;
+      text-decoration: none;
+      word-break: break-all;
+      padding: 10px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .result-item a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .btn-copy {
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+
+    .btn-copy:hover {
+      background: #764ba2;
+    }
+
+    .copied-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4caf50;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .links-section h2 {
+      font-size: 1.3rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .links-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .links-table thead {
+      background: #f5f5f5;
+    }
+
+    .links-table th {
+      text-align: left;
+      padding: 12px;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      font-size: 0.9rem;
+    }
+
+    .links-table td {
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+      color: #555;
+    }
+
+    .links-table tr:hover {
+      background: #fafafa;
+    }
+
+    .short-code {
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .original-url {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #666;
+    }
+
+    .created-at {
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .links-table {
+        font-size: 0.9rem;
+      }
+
+      .links-table th,
+      .links-table td {
+        padding: 8px;
+      }
+
+      .original-url {
+        max-width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔗 URL Shortener</h1>
+      <p>Create short, shareable links instantly</p>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-card">
+        <h3>Total Links</h3>
+        <div class="value" id="totalLinks">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Clicks</h3>
+        <div class="value" id="totalClicks">0</div>
+      </div>
+    </div>
+
+    <div class="shorten-section">
+      <h2>Create New Link</h2>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <div class="form-group">
+        <label for="urlInput">URL to Shorten</label>
+        <input
+          type="text"
+          id="urlInput"
+          placeholder="https://example.com/very/long/url"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="aliasInput">Custom Alias (Optional)</label>
+        <input
+          type="text"
+          id="aliasInput"
+          placeholder="my-custom-link"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" id="shortenBtn">Shorten URL</button>
+      </div>
+
+      <div class="result-section" id="resultSection">
+        <div class="result-item">
+          <label>Short URL</label>
+          <div class="value">
+            <input type="text" id="shortUrlInput" readonly />
+            <button class="btn btn-copy" id="copyBtn">Copy</button>
+          </div>
+        </div>
+        <div class="result-item">
+          <label>Or click to open:</label>
+          <a id="shortLink" target="_blank"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="links-section">
+      <h2>All Links</h2>
+      <table class="links-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Short URL</th>
+            <th style="width: 35%;">Original URL</th>
+            <th style="width: 12%;">Clicks</th>
+            <th style="width: 25%;">Created</th>
+            <th style="width: 13%;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="linksTableBody">
+          <tr>
+            <td colspan="5" class="empty-state">
+              <p>No shortened links yet. Create one above!</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // DOM elements
+    const urlInput = document.getElementById('urlInput');
+    const aliasInput = document.getElementById('aliasInput');
+    const shortenBtn = document.getElementById('shortenBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const resultSection = document.getElementById('resultSection');
+    const shortUrlInput = document.getElementById('shortUrlInput');
+    const copyBtn = document.getElementById('copyBtn');
+    const shortLink = document.getElementById('shortLink');
+    const linksTableBody = document.getElementById('linksTableBody');
+    const totalLinksEl = document.getElementById('totalLinks');
+    const totalClicksEl = document.getElementById('totalClicks');
+
+    // Event listeners
+    shortenBtn.addEventListener('click', handleShorten);
+    copyBtn.addEventListener('click', handleCopy);
+    urlInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleShorten());
+
+    async function handleShorten() {
+      const url = urlInput.value.trim();
+      const customAlias = aliasInput.value.trim() || undefined;
+
+      // Clear previous error
+      hideError();
+
+      if (!url) {
+        showError('Please enter a URL');
+        return;
+      }
+
+      shortenBtn.disabled = true;
+
+      try {
+        const response = await fetch('/api/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, customAlias }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError(data.error || 'Failed to shorten URL');
+          shortenBtn.disabled = false;
+          return;
+        }
+
+        // Display result
+        shortUrlInput.value = data.shortUrl;
+        shortLink.href = data.shortUrl;
+        shortLink.textContent = data.shortUrl;
+        resultSection.classList.add('show');
+
+        // Clear inputs
+        urlInput.value = '';
+        aliasInput.value = '';
+
+        // Reload links
+        loadLinks();
+      } catch (error) {
+        console.error('Error:', error);
+        showError('An error occurred. Please try again.');
+      } finally {
+        shortenBtn.disabled = false;
+      }
+    }
+
+    async function handleCopy() {
+      try {
+        await navigator.clipboard.writeText(shortUrlInput.value);
+        showCopiedMessage();
+      } catch (error) {
+        console.error('Failed to copy:', error);
+      }
+    }
+
+    function showCopiedMessage() {
+      const message = document.createElement('div');
+      message.className = 'copied-message';
+      message.textContent = '✓ Copied to clipboard!';
+      document.body.appendChild(message);
+
+      setTimeout(() => message.remove(), 2000);
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+    }
+
+    function hideError() {
+      errorMessage.classList.remove('show');
+    }
+
+    async function loadLinks() {
+      try {
+        const response = await fetch('/api/links');
+        const links = await response.json();
+
+        // Update stats
+        const totalClicks = links.reduce((sum, link) => sum + link.clickCount, 0);
+        totalLinksEl.textContent = links.length;
+        totalClicksEl.textContent = totalClicks;
+
+        // Populate table
+        if (links.length === 0) {
+          linksTableBody.innerHTML =
+            '<tr><td colspan="5" class="empty-state"><p>No shortened links yet. Create one above!</p></td></tr>';
+          return;
+        }
+
+        linksTableBody.innerHTML = links
+          .map(
+            (link) => `
+          <tr>
+            <td><span class="short-code">${link.shortCode}</span></td>
+            <td><span class="original-url" title="${link.originalUrl}">${link.originalUrl}</span></td>
+            <td>${link.clickCount}</td>
+            <td><span class="created-at">${formatDate(link.createdAt)}</span></td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteLink('${link.shortCode}')">Delete</button>
+            </td>
+          </tr>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Error loading links:', error);
+      }
+    }
+
+    async function deleteLink(shortCode) {
+      if (!confirm('Are you sure you want to delete this link?')) return;
+
+      try {
+        const response = await fetch(`/api/links/${shortCode}`, { method: 'DELETE' });
+
+        if (response.ok) {
+          loadLinks();
+        } else {
+          showError('Failed to delete link');
+        }
+      } catch (error) {
+        console.error('Error deleting link:', error);
+        showError('An error occurred while deleting');
+      }
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    // Load links on page load
+    loadLinks();
+  </script>
+</body>
+</html>
