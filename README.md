@@ -1,4 +1,4 @@
-# 🔗 URL Shortener
+# URL Shortener
 
 A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
 
@@ -99,84 +99,74 @@ Response (200):
 ]
 ```
 
-Links are sorted by click count (descending).
+Links are sorted by `clickCount` in descending order.
 
-### Delete Link
+### Delete a Link
 **DELETE /api/links/:shortCode**
 
-Response:
-- `204` - Link deleted successfully
+Response (204) - No content
+
+Error responses:
 - `404` - Short code not found
 
 ## Project Structure
 
 ```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
+.
 ├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+│   └── index.html          # Frontend single-page app
+├── src/
+│   ├── app.js              # Express app and API routes
+│   ├── server.js           # Server entry point
+│   ├── store.js            # In-memory store logic
+│   └── app.test.js         # Jest + Supertest tests
+├── jest.config.js          # Jest configuration
+├── package.json            # Dependencies and scripts
+└── README.md               # This file
 ```
 
-## Technical Details
+## Implementation Details
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Store (In-Memory)
+- URLs are stored in a JavaScript `Map`
+- Format: `shortCode -> { shortCode, originalUrl, createdAt, clickCount }`
+- Validation: URL format validation using `new URL()` constructor
+- Short code generation: Random 6-character alphanumeric codes or custom aliases
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+### Backend
+- **Express.js** for routing and middleware
+- **JSON** request/response format
+- **URL validation** using native JavaScript `URL` constructor
+- **Click tracking** on redirect operations
+- **Sorting** by click count in descending order
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
+### Frontend
+- **Vanilla JavaScript** (no frameworks)
+- **Responsive CSS Grid** for stats and layout
+- **Copy-to-clipboard** API for easy sharing
+- **Real-time updates** after creating/deleting links
+- **Date formatting** for user-friendly display
 
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
+### Testing
+- **Jest** for test runner and assertions
+- **Supertest** for HTTP request testing
+- **19 test cases** covering:
+  - Valid URL shortening
+  - Custom alias creation
+  - Error handling (invalid URLs, duplicates)
+  - Redirect functionality with click tracking
+  - List retrieval and sorting
+  - Link deletion
+  - Complete workflows
 
-## Test Coverage
+## Tech Stack
 
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
-
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+- **Runtime**: Node.js
+- **Backend**: Express.js
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Testing**: Jest, Supertest
+- **Dev**: Nodemon (auto-reload)
 
 ## License
 
-ISC
+MIT
