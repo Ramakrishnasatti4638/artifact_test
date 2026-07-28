@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Shortener</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔗 URL Shortener</h1>
+      <p class="subtitle">Create short, shareable links in seconds</p>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalLinks">0</div>
+        <div class="stat-label">Total Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalClicks">0</div>
+        <div class="stat-label">Total Clicks</div>
+      </div>
+    </div>
+
+    <div class="shorten-form-card">
+      <h2>Create Short Link</h2>
+      <form id="shortenForm">
+        <div class="form-group">
+          <label for="urlInput">Original URL</label>
+          <input 
+            type="text" 
+            id="urlInput" 
+            placeholder="https://example.com/your-very-long-url" 
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="customAliasInput">Custom Alias (optional)</label>
+          <input 
+            type="text" 
+            id="customAliasInput" 
+            placeholder="my-custom-link"
+          >
+        </div>
+        <button type="submit" class="btn btn-primary">Shorten URL</button>
+      </form>
+
+      <div id="result" class="result hidden">
+        <div class="result-content">
+          <div class="result-label">Your short URL:</div>
+          <div class="short-url-container">
+            <a id="shortUrl" href="#" target="_blank" class="short-url"></a>
+            <button id="copyBtn" class="btn btn-copy">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="error" class="error hidden"></div>
+    </div>
+
+    <div class="links-section">
+      <h2>Your Links</h2>
+      <div class="table-container">
+        <table id="linksTable">
+          <thead>
+            <tr>
+              <th>Original URL</th>
+              <th>Short URL</th>
+              <th>Clicks</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="linksTableBody">
+            <tr>
+              <td colspan="5" class="empty-state">No links yet. Create your first one above!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
