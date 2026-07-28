@@ -1,0 +1,15 @@
+{
+  "name": "url-shortener-frontend",
+  "version": "1.0.0",
+  "description": "URL Shortener Frontend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["url-shortener", "express", "frontend"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
