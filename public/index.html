@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Shortener</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔗 URL Shortener</h1>
+      <p>Transform long URLs into short, shareable links</p>
+    </header>
+
+    <!-- Stats Summary -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value" id="totalLinks">0</div>
+        <div class="stat-label">Total Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalClicks">0</div>
+        <div class="stat-label">Total Clicks</div>
+      </div>
+    </div>
+
+    <!-- Shorten URL Form -->
+    <div class="shorten-section">
+      <h2>Create Short Link</h2>
+      <form id="shortenForm">
+        <div class="form-group">
+          <input 
+            type="text" 
+            id="urlInput" 
+            placeholder="Enter your long URL here..."
+            required
+          >
+        </div>
+        <div class="form-group">
+          <input 
+            type="text" 
+            id="customAliasInput" 
+            placeholder="Custom alias (optional)"
+          >
+        </div>
+        <button type="submit" class="btn-primary">Shorten URL</button>
+      </form>
+
+      <!-- Result Display -->
+      <div id="resultSection" class="result-section" style="display: none;">
+        <div class="result-content">
+          <h3>✅ Your Short URL</h3>
+          <div class="short-url-display">
+            <a id="shortUrlLink" href="#" target="_blank"></a>
+            <button id="copyBtn" class="btn-copy" title="Copy to clipboard">
+              📋 Copy
+            </button>
+          </div>
+          <div class="success-message" id="copyMessage" style="display: none;">
+            ✓ Copied to clipboard!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links Table -->
+    <div class="links-section">
+      <h2>All Shortened Links</h2>
+      <div class="table-container">
+        <table id="linksTable">
+          <thead>
+            <tr>
+              <th>Original URL</th>
+              <th>Short URL</th>
+              <th>Clicks</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="linksTableBody">
+            <tr class="empty-state">
+              <td colspan="5">No links created yet. Start by shortening a URL above!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
