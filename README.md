@@ -1,28 +1,32 @@
-# 🔗 URL Shortener
+# Fastify API with Redis Rate Limiting
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A production-ready REST API built with Fastify featuring a robust Redis-based rate limiting system using the sliding window algorithm.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
+### Rate Limiting System
+- **Sliding Window Algorithm** - Accurate request counting with sub-second precision
+- **Redis-Backed** - Distributed rate limiting across multiple instances
+- **Flexible Configuration** - Global, per-route, and per-user limits
+- **Standard Headers** - X-RateLimit-* headers for client visibility
+- **Graceful Degradation** - Fail-open strategy if Redis is unavailable
+- **Whitelist Support** - Bypass rate limits for trusted IPs/users
+- **Route-Specific Limits** - Different limits for different endpoints
 
-### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+### API Endpoints
+- **GET /** - API information and available endpoints
+- **GET /api/health** - Health check (rate limiting disabled)
+- **GET /api/data** - Example endpoint with global rate limit
+- **POST /api/create** - Example endpoint with strict rate limit (10/min)
+- **GET /api/public** - Example endpoint with permissive rate limit (1000/min)
+- **GET /api/rate-limit-status** - Check current rate limit status
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+### Technical Features
+- **Fastify 4.x** - High-performance web framework
+- **ioredis** - Production-grade Redis client with connection pooling
+- **Environment-based config** - Easy deployment configuration
+- **Comprehensive tests** - Jest test suite with 80%+ coverage
+- **Graceful shutdown** - Proper cleanup of Redis connections
 
 ## Installation
 
@@ -30,153 +34,356 @@ A full-stack URL shortener application built with Express, HTML, CSS, and vanill
 npm install
 ```
 
+## Configuration
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+### Environment Variables
+
+```bash
+# Server
+PORT=3000
+HOST=0.0.0.0
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# Rate Limiting
+RATE_LIMIT_MAX=100              # Max requests per window
+RATE_LIMIT_WINDOW_MS=60000      # Window size in milliseconds (60s)
+RATE_LIMIT_ENABLED=true         # Enable/disable rate limiting
+```
+
 ## Usage
 
-### Start the server
+### Start Redis (Docker)
+
+```bash
+docker run -d -p 6379:6379 redis:7-alpine
+```
+
+### Start the Server
+
 ```bash
 npm start
 ```
 
-Server runs on `http://localhost:3000`
+### Development Mode (with auto-reload)
 
-### Development mode (with auto-reload)
 ```bash
 npm run dev
 ```
 
-### Run tests
+### Run Tests
+
 ```bash
 npm test
 ```
 
-## API Documentation
+### Run Tests with Coverage
 
-### Create Shortened URL
-**POST /api/shorten**
+```bash
+npm test:coverage
+```
 
-Request body:
+## Rate Limiting Configuration
+
+### Global Rate Limit
+
+Default configuration applies to all routes unless overridden:
+
+```javascript
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  max: 100,           // 100 requests
+  windowMs: 60000,    // per 60 seconds
+});
+```
+
+### Route-Specific Rate Limits
+
+```javascript
+fastify.post('/create', {
+  config: {
+    rateLimit: {
+      max: 10,
+      windowMs: 60000,
+      routeKey: 'create',  // Optional: custom Redis key
+    },
+  },
+}, async (request, reply) => {
+  // Handler
+});
+```
+
+### Disable Rate Limiting for Specific Routes
+
+```javascript
+fastify.get('/health', {
+  config: {
+    rateLimit: false,
+  },
+}, async (request, reply) => {
+  // Handler
+});
+```
+
+### Custom Key Generator
+
+Rate limit by user ID instead of IP:
+
+```javascript
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  keyGenerator: (request) => {
+    return request.user?.id || request.ip;
+  },
+});
+```
+
+### Whitelist IPs
+
+```javascript
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  whitelist: ['127.0.0.1', '10.0.0.0/8'],
+});
+```
+
+### Custom Callback on Limit Reached
+
+```javascript
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  onLimitReached: (request, reply) => {
+    fastify.log.warn({
+      ip: request.ip,
+      path: request.url,
+    }, 'Rate limit exceeded');
+  },
+});
+```
+
+## API Response Headers
+
+All rate-limited endpoints return these headers:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 2024-01-01T00:01:00.000Z
+```
+
+When rate limited (429 response):
+
+```
+Retry-After: 60
+```
+
+## Rate Limit Error Response
+
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded. Try again in 60 seconds.",
+  "retryAfter": 60
 }
 ```
 
-Response (201):
+## Architecture
+
+### Sliding Window Algorithm
+
+The rate limiter uses Redis Sorted Sets (ZSET) for accurate sliding window counting:
+
+1. **Store requests** - Each request is added to a ZSET with timestamp as score
+2. **Window cleanup** - Requests outside the time window are removed
+3. **Count requests** - Current count determines if limit is exceeded
+4. **Atomic operations** - Redis pipeline ensures consistency
+
+### Redis Data Structure
+
+```
+Key: ratelimit:{routeKey}:{userKey}
+Type: Sorted Set (ZSET)
+Score: Timestamp in milliseconds
+Member: Unique request identifier
+TTL: Window duration + 1 second
+```
+
+Example:
+```
+ratelimit:global:127.0.0.1
+  1704067200000 -> "1704067200000-0.123"
+  1704067201000 -> "1704067201000-0.456"
+  1704067202000 -> "1704067202000-0.789"
+```
+
+### Plugin Architecture
+
+```
+src/
+├── config/
+│   └── redis.js           # Redis client configuration
+├── plugins/
+│   ├── rate-limiter.js    # Rate limiter plugin
+│   └── __tests__/
+│       └── rate-limiter.test.js
+├── routes/
+│   └── api.js             # API routes with rate limit examples
+└── server.js              # Main application
+```
+
+## Testing Examples
+
+### Test Rate Limiting
+
+```bash
+# Make multiple requests quickly
+for i in {1..105}; do
+  curl http://localhost:3000/api/data
+  echo ""
+done
+```
+
+After 100 requests, you'll get:
+
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded. Try again in 60 seconds.",
+  "retryAfter": 60
 }
 ```
 
-Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+### Check Rate Limit Status
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
-
-Response (200):
-```json
-[
-  {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
-  }
-]
+```bash
+curl http://localhost:3000/api/rate-limit-status
 ```
-
-Links are sorted by click count (descending).
-
-### Delete Link
-**DELETE /api/links/:shortCode**
 
 Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
-
-## Project Structure
-
-```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
-├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+```json
+{
+  "ip": "127.0.0.1",
+  "count": 5,
+  "remaining": 95,
+  "limit": 100,
+  "resetTime": 1704067260000
+}
 ```
 
-## Technical Details
+## Production Considerations
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
+### Security
+- **Behind a Proxy** - Configure `keyGenerator` to use `X-Forwarded-For`
+- **Whitelist Management** - Store whitelists in environment/config
+- **DDoS Protection** - Combine with upstream rate limiting (nginx, CloudFlare)
 
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
+### Performance
+- **Redis Connection Pooling** - ioredis handles connection pooling automatically
+- **Pipeline Usage** - Atomic operations reduce Redis round trips
+- **Fail Open** - Service continues even if Redis is down
 
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
+### Monitoring
+- Log rate limit violations
+- Track Redis connection health
+- Monitor rate limit metrics (requests/sec, blocks/sec)
+
+### Scaling
+- **Horizontal Scaling** - Redis-based state allows multiple API instances
+- **Redis Cluster** - For high-throughput applications
+- **Different Strategies** - Consider token bucket for burst handling
+
+## Advanced Usage
+
+### Multiple Rate Limits
+
+Apply multiple rate limiters with different strategies:
+
+```javascript
+// Global rate limit: 1000 requests/hour
+await fastify.register(rateLimiterPlugin, {
+  redis: redisClient1,
+  max: 1000,
+  windowMs: 3600000,
+});
+
+// Strict rate limit for specific routes
+fastify.post('/expensive', {
+  config: {
+    rateLimit: { max: 5, windowMs: 60000 }
   }
-  ```
-
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
-
-## Test Coverage
-
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
+}, handler);
 ```
 
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
+### User-Specific Limits
 
-## Browser Support
+```javascript
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  keyGenerator: (request) => {
+    const userId = request.user?.id;
+    const tier = request.user?.tier || 'free';
+    
+    // Different limits for different user tiers
+    return userId ? `user:${userId}:${tier}` : request.ip;
+  },
+  max: (request) => {
+    const tier = request.user?.tier || 'free';
+    return tier === 'premium' ? 1000 : 100;
+  },
+});
+```
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
+### Dynamic Configuration
+
+```javascript
+// Load limits from database
+const limits = await loadLimitsFromDB();
+
+await fastify.register(rateLimiterPlugin, {
+  redis,
+  max: limits.default.max,
+  windowMs: limits.default.windowMs,
+});
+```
+
+## Troubleshooting
+
+### Redis Connection Issues
+
+```bash
+# Check Redis is running
+redis-cli ping
+
+# Check Redis connection from app
+docker logs <container-name>
+```
+
+### Rate Limiter Not Working
+
+1. Check `RATE_LIMIT_ENABLED=true` in `.env`
+2. Verify Redis connection in logs
+3. Ensure route doesn't have `rateLimit: false` config
+
+### Tests Failing
+
+```bash
+# Clear Redis test data
+redis-cli FLUSHDB
+
+# Run tests with verbose output
+npm test -- --verbose
+```
 
 ## License
 
-ISC
+MIT

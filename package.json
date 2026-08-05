@@ -1,0 +1,52 @@
+{
+  "name": "fastify-api-rate-limiter",
+  "version": "1.0.0",
+  "description": "Fastify REST API with Redis-based rate limiting",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:coverage": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test:integration": "bash scripts/test-redis.sh",
+    "test:load": "node scripts/load-test.js",
+    "demo": "bash scripts/demo-rate-limiting.sh"
+  },
+  "keywords": [
+    "fastify",
+    "rate-limiting",
+    "redis",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^4.25.2",
+    "fastify-plugin": "^4.5.1",
+    "ioredis": "^5.3.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/config/**",
+      "!src/routes/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  }
+}
