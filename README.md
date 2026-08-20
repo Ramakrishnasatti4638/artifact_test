@@ -24,6 +24,48 @@ A full-stack URL shortener application built with Express, HTML, CSS, and vanill
 - 94%+ code coverage
 - Integration tests for complete workflows
 
+## Contributing
+
+### Azure Task ID Requirement
+
+This repository follows a requirement to link all pull requests with Azure DevOps Task IDs. This ensures better traceability and project management integration.
+
+#### PR Creation Guidelines
+
+**All PRs must include a valid Azure Task ID** in either the title or description.
+
+Supported formats:
+- `Task-12345` or `TASK-12345`
+- `AB#12345` (Azure DevOps format)
+- `Azure DevOps task identifier`
+
+**Example PR titles:**
+- "Add feature (Task-1234)"
+- "Fix bug - AB#5678"
+- "Implement feature (Task-9012)"
+
+#### Setup Git Hooks (Optional Local Validation)
+
+To set up local git hooks that will remind you about Azure Task IDs:
+
+```bash
+npm run setup-hooks
+```
+
+This configures git to use `.githooks/` directory for local validation.
+
+#### Automatic PR Validation
+
+Once you create a pull request, a GitHub Actions workflow will automatically validate that an Azure Task ID is included. The PR will be marked as failing validation until a valid Task ID is added.
+
+#### Creating Azure Task IDs
+
+If you need to create an Azure Task ID:
+1. Go to [Azure DevOps](https://dev.azure.com)
+2. Navigate to your project
+3. Create a new Task in your backlog
+4. Use the Task ID in your PR
+
 ## Installation
 
 ```bash
