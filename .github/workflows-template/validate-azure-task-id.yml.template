@@ -1,0 +1,61 @@
+# GitHub Actions Workflow Template for Azure Task ID Validation
+# 
+# This file provides the GitHub Actions workflow configuration for validating
+# Azure Task IDs in pull requests. Since GitHub Actions workflows require special
+# permissions to push, this is provided as a template.
+#
+# To activate this workflow:
+# 1. Copy the content below to `.github/workflows/validate-azure-task-id.yml`
+# 2. Push with a token that has 'workflow' scope permissions
+# 3. Or use the GitHub UI to create the workflow file directly
+#
+# ============================================================================
+
+name: Validate Azure Task ID in PR
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-azure-task-id:
+    runs-on: ubuntu-latest
+    name: Check Azure Task ID Requirement
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Azure Task ID
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { title, body } = pr;
+
+            // Azure Task ID patterns:
+            // - Task-12345 or TASK-12345
+            // - AB#12345 or ab#12345
+            // - Azure DevOps task ID format variations
+            const azureTaskIdPattern = /(?:Task|TASK|task)[-_]?\d{4,6}|[A-Za-z]+#\d{4,6}|Azure\s*(?:DevOps\s*)?(?:Task\s*)?[I]?[D]?:?\s*[\d\w\-]+/i;
+
+            const titleHasTaskId = azureTaskIdPattern.test(title);
+            const bodyHasTaskId = body ? azureTaskIdPattern.test(body) : false;
+
+            if (!titleHasTaskId && !bodyHasTaskId) {
+              core.setFailed(
+                '❌ PR must include a valid Azure Task ID in the title or description.\n\n' +
+                'Supported formats:\n' +
+                '  - Task-12345 or TASK-12345\n' +
+                '  - AB#12345\n' +
+                '  - Azure DevOps task identifier\n\n' +
+                'Example PR titles:\n' +
+                '  - "Add feature (Task-1234)"\n' +
+                '  - "Fix bug - AB#5678"\n' +
+                '  - "Implement feature (Task-9012)"\n\n' +
+                'If you haven\'t created an Azure Task ID yet, please create one at ' +
+                'https://dev.azure.com and update your PR title or description.'
+              );
+            } else {
+              core.info('✅ Azure Task ID found in PR. Validation passed.');
+            }

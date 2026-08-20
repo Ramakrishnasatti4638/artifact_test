@@ -91,6 +91,17 @@ When you create or update a PR, GitHub Actions automatically runs a workflow tha
 
 **The PR must pass validation before it can be merged.**
 
+#### Setting Up GitHub Actions Workflow
+
+The GitHub Actions workflow for validation is provided in `.github/workflows-template/validate-azure-task-id.yml.template`.
+
+To activate this workflow:
+1. Copy the template file content to `.github/workflows/validate-azure-task-id.yml`
+2. Push the changes using a GitHub token with `workflow` scope
+3. Or manually create the file via GitHub's web interface
+
+For more details, see the template file in `.github/workflows-template/`.
+
 ## Troubleshooting
 
 ### "PR validation failed: Azure Task ID not found"
