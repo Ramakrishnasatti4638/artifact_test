@@ -1,0 +1,35 @@
+#!/bin/bash
+# prepare-commit-msg hook for Azure Task ID validation
+# This hook can warn developers to include Azure Task IDs in commit messages
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+
+# Only validate for commits made directly, not for merges or amends
+if [ "$COMMIT_SOURCE" != "message" ]; then
+    exit 0
+fi
+
+# Read the commit message
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Azure Task ID patterns:
+# - Task-12345, TASK-12345
+# - AB#12345
+# - Other Azure DevOps format variations
+AZURE_TASK_PATTERN="(?:Task|TASK|task)[-_]?\d{4,6}|[A-Za-z]+#\d{4,6}|Azure\s*(?:DevOps\s*)?(?:Task|TASK)\s*[I]?[D]?:?\s*[\d\w\-]+"
+
+# Check if Azure Task ID is present using grep with extended regex
+if ! echo "$COMMIT_MSG" | grep -qiE "$AZURE_TASK_PATTERN"; then
+    # Only warn if commit message is not empty (to avoid warnings on merge commits)
+    if [ ! -z "$(echo "$COMMIT_MSG" | tr -d '\n')" ]; then
+        cat >> "$COMMIT_MSG_FILE" << 'EOF'
+
+# ⚠️  Azure Task ID not detected in commit message.
+# While optional for commits, PR descriptions should include the Azure Task ID.
+# Format: Task-12345 or AB#12345
+EOF
+    fi
+fi
+
+exit 0
