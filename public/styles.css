@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 700px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 2.5em;
+}
+
+h2 {
+  color: #555;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.input-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.url-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s;
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-copy {
+  background: #f0f0f0;
+  color: #333;
+  padding: 8px 16px;
+  font-size: 0.9em;
+}
+
+.btn-copy:hover {
+  background: #667eea;
+  color: white;
+}
+
+.result-section {
+  margin-bottom: 30px;
+}
+
+.result-card {
+  background: #f8f9fa;
+  border: 2px solid #e8f0fe;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 5px solid #667eea;
+}
+
+.result-card h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.result-item {
+  margin-bottom: 15px;
+}
+
+.result-item:last-child {
+  margin-bottom: 0;
+}
+
+.result-item label {
+  display: block;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+.url-text {
+  background: white;
+  padding: 10px 12px;
+  border-radius: 4px;
+  color: #333;
+  word-break: break-all;
+  border: 1px solid #e0e0e0;
+}
+
+.url-copy-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.url-copy-wrapper .url-text {
+  flex: 1;
+}
+
+.urls-list-section {
+  margin-top: 40px;
+}
+
+.urls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.url-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s;
+}
+
+.url-item:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateX(5px);
+}
+
+.url-item-short {
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+.url-item-original {
+  color: #666;
+  font-size: 0.95em;
+  word-break: break-all;
+  margin-bottom: 5px;
+}
+
+.url-item-label {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.empty-message {
+  color: #999;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+.error-message {
+  background: #fee;
+  border: 2px solid #fcc;
+  color: #c33;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 25px;
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  .input-section {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .url-copy-wrapper {
+    flex-direction: column;
+  }
+
+  .url-copy-wrapper .btn-copy {
+    width: 100%;
+  }
+}
