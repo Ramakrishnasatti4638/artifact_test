@@ -99,6 +99,19 @@ h2 {
   color: white;
 }
 
+.btn-delete {
+  background: #ff6b6b;
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.85em;
+}
+
+.btn-delete:hover {
+  background: #ee5a52;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(255, 107, 107, 0.3);
+}
+
 .result-section {
   margin-bottom: 30px;
 }
@@ -188,9 +201,29 @@ h2 {
   margin-bottom: 5px;
 }
 
+.url-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
 .url-item-label {
   color: #999;
   font-size: 0.85em;
+}
+
+.url-item-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 0.85em;
+  color: #999;
+}
+
+.url-item-clicks {
+  color: #667eea;
+  font-weight: 500;
 }
 
 .empty-message {

@@ -93,9 +93,15 @@ function displayUrls(urls) {
 
   urlsList.innerHTML = urls.map(url => `
     <div class="url-item">
-      <a href="${url.shortUrl}" class="url-item-short">${url.shortUrl}</a>
+      <div class="url-item-header">
+        <a href="${url.shortUrl}" class="url-item-short">${url.shortUrl}</a>
+        <button class="btn btn-delete" onclick="deleteUrl('${url.shortId}')">Delete</button>
+      </div>
       <div class="url-item-original">${url.originalUrl}</div>
-      <div class="url-item-label">Short ID: ${url.shortId}</div>
+      <div class="url-item-stats">
+        <span class="url-item-label">Short ID: ${url.shortId}</span>
+        <span class="url-item-clicks">👁️ ${url.clicks} clicks</span>
+      </div>
     </div>
   `).join('');
 }
@@ -107,4 +113,24 @@ function showError(message) {
 
 function hideError() {
   errorMessage.style.display = 'none';
+}
+
+async function deleteUrl(shortId) {
+  if (!confirm('Are you sure you want to delete this shortened URL?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/shorten/${shortId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete URL');
+    }
+
+    loadUrls();
+  } catch (error) {
+    showError(error.message);
+  }
 }
