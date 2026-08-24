@@ -16,6 +16,15 @@ app.use(express.static('public'));
 const urls = new Map();
 let shortIdCounter = 1000;
 
+// Store metadata for each short URL
+class URLMetadata {
+  constructor(originalUrl) {
+    this.originalUrl = originalUrl;
+    this.clicks = 0;
+    this.createdAt = new Date();
+  }
+}
+
 // Utility function to generate short IDs
 function generateShortId() {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -32,10 +41,12 @@ function generateShortId() {
 
 // GET /api/urls - List all shortened URLs
 app.get('/api/urls', (req, res) => {
-  const urlList = Array.from(urls.entries()).map(([shortId, originalUrl]) => ({
+  const urlList = Array.from(urls.entries()).map(([shortId, metadata]) => ({
     shortId,
     shortUrl: `http://localhost:${PORT}/${shortId}`,
-    originalUrl
+    originalUrl: metadata.originalUrl,
+    clicks: metadata.clicks,
+    createdAt: metadata.createdAt
   }));
 
   res.json(urlList);
@@ -62,22 +73,35 @@ app.post('/api/shorten', (req, res) => {
   }
 
   const shortId = generateShortId();
-  urls.set(shortId, originalUrl);
+  urls.set(shortId, new URLMetadata(originalUrl));
 
   const shortUrl = `http://localhost:${PORT}/${shortId}`;
   res.json({ shortId, shortUrl, originalUrl });
 });
 
-// GET /:shortId - Redirect to original URL (must be last to avoid catching other routes)
-app.get('/:shortId', (req, res) => {
+// DELETE /api/shorten/:shortId - Delete a shortened URL
+app.delete('/api/shorten/:shortId', (req, res) => {
   const { shortId } = req.params;
-  const originalUrl = urls.get(shortId);
 
-  if (!originalUrl) {
+  if (!urls.has(shortId)) {
     return res.status(404).json({ error: 'Short URL not found' });
   }
 
-  res.redirect(originalUrl);
+  urls.delete(shortId);
+  res.json({ message: 'Short URL deleted successfully' });
+});
+
+// GET /:shortId - Redirect to original URL (must be last to avoid catching other routes)
+app.get('/:shortId', (req, res) => {
+  const { shortId } = req.params;
+  const metadata = urls.get(shortId);
+
+  if (!metadata) {
+    return res.status(404).json({ error: 'Short URL not found' });
+  }
+
+  metadata.clicks++;
+  res.redirect(metadata.originalUrl);
 });
 
 app.listen(PORT, () => {
