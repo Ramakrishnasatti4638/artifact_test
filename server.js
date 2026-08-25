@@ -46,6 +46,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
 });
 
+// POST /api/reset - Clear all shortened URLs (for testing purposes)
+app.post('/api/reset', (req, res) => {
+  urls.clear();
+  shortIdCounter = 1000;
+  res.json({ status: 'reset', message: 'All URLs cleared' });
+});
+
 // POST /api/shorten - Create a shortened URL
 app.post('/api/shorten', (req, res) => {
   const { originalUrl } = req.body;

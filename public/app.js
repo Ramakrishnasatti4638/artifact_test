@@ -20,6 +20,13 @@ urlInput.addEventListener('keypress', (e) => {
   }
 });
 
+// Keyboard shortcut to reset (Ctrl+Shift+R) for testing
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+    resetUrls();
+  }
+});
+
 async function shortenUrl() {
   const originalUrl = urlInput.value.trim();
 
@@ -145,4 +152,23 @@ function showError(message) {
 
 function hideError() {
   errorMessage.style.display = 'none';
+}
+
+async function resetUrls() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      console.log('URLs cleared successfully');
+      resultSection.style.display = 'none';
+      urlInput.value = '';
+      loadUrls();
+    }
+  } catch (error) {
+    console.error('Failed to reset URLs:', error);
+  }
 }
