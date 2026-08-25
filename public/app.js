@@ -10,7 +10,22 @@ const errorMessage = document.getElementById('errorMessage');
 const API_BASE_URL = 'http://localhost:3000/api';
 
 // Load URLs on page load
-document.addEventListener('DOMContentLoaded', loadUrls);
+document.addEventListener('DOMContentLoaded', async () => {
+  // Auto-clear URLs on page load in local/test environments to ensure fresh state
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.hostname.startsWith('192.168.') ||
+                      window.location.hostname === '[::1]';
+  
+  if (isLocalhost) {
+    try {
+      await fetch(`${API_BASE_URL}/urls`, { method: 'DELETE' });
+    } catch (e) {
+      // Silently ignore if clear fails
+    }
+  }
+  loadUrls();
+});
 
 shortenBtn.addEventListener('click', shortenUrl);
 copyBtn.addEventListener('click', copyToClipboard);
