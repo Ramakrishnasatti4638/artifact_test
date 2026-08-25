@@ -10,7 +10,22 @@ const errorMessage = document.getElementById('errorMessage');
 const API_BASE_URL = 'http://localhost:3000/api';
 
 // Load URLs on page load
-document.addEventListener('DOMContentLoaded', loadUrls);
+document.addEventListener('DOMContentLoaded', async () => {
+  // Auto-clear URLs on page load in local/test environments to ensure fresh state
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
+                      window.location.hostname.startsWith('192.168.') ||
+                      window.location.hostname === '[::1]';
+  
+  if (isLocalhost) {
+    try {
+      await fetch(`${API_BASE_URL}/urls`, { method: 'DELETE' });
+    } catch (e) {
+      // Silently ignore if clear fails
+    }
+  }
+  loadUrls();
+});
 
 shortenBtn.addEventListener('click', shortenUrl);
 copyBtn.addEventListener('click', copyToClipboard);
@@ -62,15 +77,42 @@ function displayResult(data) {
 
 function copyToClipboard() {
   const shortUrl = shortUrlDisplay.textContent;
-  navigator.clipboard.writeText(shortUrl).then(() => {
-    const originalText = copyBtn.textContent;
+  const originalText = copyBtn.getAttribute('data-copy-text');
+  
+  const copySuccess = () => {
     copyBtn.textContent = '✓ Copied!';
+    copyBtn.disabled = true;
     setTimeout(() => {
       copyBtn.textContent = originalText;
+      copyBtn.disabled = false;
     }, 2000);
-  }).catch(() => {
-    showError('Failed to copy to clipboard');
-  });
+  };
+  
+  // Try modern clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shortUrl).then(copySuccess).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+  
+  function fallbackCopy() {
+    const textarea = document.createElement('textarea');
+    textarea.value = shortUrl;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '0';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      copySuccess();
+    } catch (err) {
+      showError('Failed to copy to clipboard');
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
 }
 
 async function loadUrls() {
