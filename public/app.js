@@ -62,15 +62,53 @@ function displayResult(data) {
 
 function copyToClipboard() {
   const shortUrl = shortUrlDisplay.textContent;
-  navigator.clipboard.writeText(shortUrl).then(() => {
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = '✓ Copied!';
-    setTimeout(() => {
-      copyBtn.textContent = originalText;
-    }, 2000);
-  }).catch(() => {
+  
+  try {
+    // Try modern clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shortUrl).then(() => {
+        showCopySuccess();
+      }).catch(() => {
+        // If clipboard API fails, use fallback
+        useFallbackCopy(shortUrl);
+      });
+    } else {
+      // Use fallback for older browsers
+      useFallbackCopy(shortUrl);
+    }
+  } catch (err) {
+    // Fallback if clipboard check fails
+    useFallbackCopy(shortUrl);
+  }
+}
+
+function useFallbackCopy(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    const result = document.execCommand('copy');
+    if (result) {
+      showCopySuccess();
+    } else {
+      showError('Failed to copy to clipboard');
+    }
+  } catch (err) {
     showError('Failed to copy to clipboard');
-  });
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
+function showCopySuccess() {
+  const originalText = copyBtn.textContent;
+  copyBtn.textContent = '✓ Copied!';
+  setTimeout(() => {
+    copyBtn.textContent = originalText;
+  }, 2000);
 }
 
 async function loadUrls() {
