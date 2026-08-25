@@ -62,15 +62,42 @@ function displayResult(data) {
 
 function copyToClipboard() {
   const shortUrl = shortUrlDisplay.textContent;
-  navigator.clipboard.writeText(shortUrl).then(() => {
-    const originalText = copyBtn.textContent;
+  const originalText = copyBtn.getAttribute('data-copy-text');
+  
+  const copySuccess = () => {
     copyBtn.textContent = '✓ Copied!';
+    copyBtn.disabled = true;
     setTimeout(() => {
       copyBtn.textContent = originalText;
+      copyBtn.disabled = false;
     }, 2000);
-  }).catch(() => {
-    showError('Failed to copy to clipboard');
-  });
+  };
+  
+  // Try modern clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shortUrl).then(copySuccess).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+  
+  function fallbackCopy() {
+    const textarea = document.createElement('textarea');
+    textarea.value = shortUrl;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '0';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      copySuccess();
+    } catch (err) {
+      showError('Failed to copy to clipboard');
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
 }
 
 async function loadUrls() {

@@ -41,6 +41,13 @@ app.get('/api/urls', (req, res) => {
   res.json(urlList);
 });
 
+// DELETE /api/urls - Clear all URLs (for testing)
+app.delete('/api/urls', (req, res) => {
+  urls.clear();
+  shortIdCounter = 1000;
+  res.json({ message: 'All URLs cleared' });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
