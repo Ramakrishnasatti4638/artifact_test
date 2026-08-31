@@ -371,7 +371,14 @@
       const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
           setMessage({ type: 'success', text: 'Copied to clipboard!' });
-          setTimeout(() => setMessage(''), 3000);
+          setTimeout(() => {
+            setMessage('');
+          }, 3000);
+        }).catch(() => {
+          setMessage({ type: 'error', text: 'Failed to copy to clipboard' });
+          setTimeout(() => {
+            setMessage('');
+          }, 3000);
         });
       };
 
@@ -425,7 +432,9 @@
               loading ? 'Shortening...' : 'Shorten URL'
             )
           ),
-          urls.length > 0 ? e('div', { className: 'urls-section' },
+          urls.length === 0 ? e('div', { className: 'empty-state' },
+            e('p', null, 'No shortened URLs yet. Create one to get started!')
+          ) : e('div', { className: 'urls-section' },
             e('h2', null, 'Your Shortened URLs'),
             urls.map((item) =>
               e('div', { key: item.id, className: 'url-item' },
@@ -441,10 +450,7 @@
                 )
               )
             )
-          ) : null,
-          urls.length === 0 && url === '' ? e('div', { className: 'empty-state' },
-            e('p', null, 'No shortened URLs yet. Create one to get started!')
-          ) : null
+          )
         ),
         showStats && stats ? e('div', { className: 'modal', onClick: () => setShowStats(false) },
           e('div', { className: 'modal-content', onClick: (evt) => evt.stopPropagation() },
