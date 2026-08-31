@@ -71,7 +71,9 @@ function copyToClipboard() {
 // Load and display all URLs
 async function loadUrls() {
   try {
-    const response = await fetch(`${API_BASE}/api/urls`);
+    const response = await fetch(`${API_BASE}/api/urls?t=${Date.now()}`, {
+      cache: 'no-store'
+    });
     const urls = await response.json();
     
     if (urls.length === 0) {
@@ -169,6 +171,13 @@ function escapeHtml(text) {
 
 // Load URLs on page load
 loadUrls();
+
+// Refresh when page becomes visible (user returns from redirect)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    loadUrls();
+  }
+});
 
 // Poll for URL updates every 2 seconds to refresh click counts after redirects
 setInterval(loadUrls, 2000);
