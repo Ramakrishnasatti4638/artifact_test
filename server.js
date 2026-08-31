@@ -31,7 +31,7 @@ function generateShortCode() {
 
 // API Routes
 app.post('/api/shorten', (req, res) => {
-  const { url } = req.body;
+  const { url, customShortCode } = req.body;
 
   if (!url) {
     return res.status(400).json({ error: 'URL is required' });
@@ -44,14 +44,29 @@ app.post('/api/shorten', (req, res) => {
     return res.status(400).json({ error: 'Invalid URL format' });
   }
 
-  // Check if URL already shortened
-  for (let [code, stored] of urlMap) {
-    if (stored.original === url) {
-      return res.json({ shortCode: code, shortUrl: `${req.get('host')}/${code}` });
+  let shortCode = customShortCode;
+
+  if (shortCode) {
+    // Validate custom short code format (alphanumeric and hyphens)
+    if (!/^[a-zA-Z0-9_-]+$/.test(shortCode)) {
+      return res.status(400).json({ error: 'Short code can only contain letters, numbers, hyphens, and underscores' });
     }
+
+    // Check if custom code already exists
+    if (urlMap.has(shortCode)) {
+      return res.status(409).json({ error: 'Short code already exists' });
+    }
+  } else {
+    // Check if URL already shortened
+    for (let [code, stored] of urlMap) {
+      if (stored.original === url) {
+        return res.json({ shortCode: code, shortUrl: `${req.get('host')}/${code}`, originalUrl: url });
+      }
+    }
+
+    shortCode = generateShortCode();
   }
 
-  const shortCode = generateShortCode();
   urlMap.set(shortCode, {
     original: url,
     createdAt: new Date(),

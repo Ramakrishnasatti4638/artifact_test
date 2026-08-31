@@ -1,4 +1,5 @@
 const urlInput = document.getElementById('urlInput');
+const customCode = document.getElementById('customCode');
 const shortenBtn = document.getElementById('shortenBtn');
 const errorMsg = document.getElementById('errorMsg');
 const successMsg = document.getElementById('successMsg');
@@ -13,6 +14,7 @@ urlInput.addEventListener('keypress', (e) => {
 
 async function shortenUrl() {
   const url = urlInput.value.trim();
+  const code = customCode.value.trim();
 
   if (!url) {
     showError('Please enter a URL');
@@ -20,12 +22,17 @@ async function shortenUrl() {
   }
 
   try {
+    const payload = { url };
+    if (code) {
+      payload.customShortCode = code;
+    }
+
     const response = await fetch('/api/shorten', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ url })
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
@@ -37,6 +44,7 @@ async function shortenUrl() {
 
     showSuccess(data);
     urlInput.value = '';
+    customCode.value = '';
     loadUrls();
   } catch (error) {
     showError('An error occurred. Please try again.');
