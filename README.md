@@ -1,28 +1,24 @@
-# 🔗 URL Shortener
+# 🔗 URL Shortener App
 
-A full-stack URL shortener application built with Express, HTML, CSS, and vanilla JavaScript. Features an in-memory store, comprehensive API, and a modern responsive UI.
+A modern, full-stack URL shortening application built with Node.js + Express and vanilla JavaScript. Convert long URLs into short, shareable links with click tracking.
 
 ## Features
 
-### Backend API
-- **POST /api/shorten** - Create shortened URLs with optional custom aliases
-- **GET /:shortCode** - Redirect to original URL with click tracking
-- **GET /api/links** - Retrieve all links with stats (sorted by click count)
-- **DELETE /api/links/:shortCode** - Delete shortened links
+- ✅ **Shorten URLs** - Convert any long URL into a short, memorable link
+- ✅ **Click Tracking** - Automatically track how many times each shortened URL is clicked
+- ✅ **URL History** - View all your shortened URLs with creation dates and stats
+- ✅ **Duplicate Detection** - If you shorten the same URL twice, you get the same short code
+- ✅ **Copy to Clipboard** - One-click copying of short URLs
+- ✅ **Real-time Updates** - Auto-refresh stats every 30 seconds
+- ✅ **Responsive Design** - Works beautifully on desktop, tablet, and mobile
+- ✅ **Modern UI** - Clean, gradient interface with smooth animations
 
-### Frontend
-- Clean, modern single-page interface
-- Real-time stats dashboard (Total Links, Total Clicks)
-- URL shortening with optional custom aliases
-- Copy-to-clipboard functionality
-- Links table with click counts and delete actions
-- Responsive design for mobile and desktop
+## Tech Stack
 
-### Testing
-- Comprehensive Jest + Supertest test suite
-- 19 test cases covering all endpoints
-- 94%+ code coverage
-- Integration tests for complete workflows
+- **Backend**: Node.js + Express.js + CORS + Body-parser
+- **Frontend**: HTML5, CSS3 (with gradients & animations), Vanilla JavaScript
+- **Storage**: In-memory Map (can be upgraded to database)
+- **API**: RESTful JSON API
 
 ## Installation
 
@@ -30,153 +26,104 @@ A full-stack URL shortener application built with Express, HTML, CSS, and vanill
 npm install
 ```
 
-## Usage
+## Running the App
 
-### Start the server
-```bash
-npm start
-```
-
-Server runs on `http://localhost:3000`
-
-### Development mode (with auto-reload)
+### Development Mode (with auto-reload)
 ```bash
 npm run dev
 ```
 
-### Run tests
+### Production Mode
 ```bash
-npm test
+npm start
 ```
 
-## API Documentation
+The app will start on `http://localhost:3000`
 
-### Create Shortened URL
-**POST /api/shorten**
+## API Endpoints
 
-Request body:
+### POST /api/shorten
+Create a shortened URL.
+
+**Request:**
 ```json
 {
-  "url": "https://example.com/very/long/url",
-  "customAlias": "my-link" // optional
+  "url": "https://example.com/very/long/url/that/needs/shortening"
 }
 ```
 
-Response (201):
+**Response:**
 ```json
 {
-  "shortCode": "abc123",
-  "originalUrl": "https://example.com/very/long/url",
-  "shortUrl": "http://localhost:3000/abc123",
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "shortCode": "qi",
+  "shortUrl": "http://localhost:3000/qi",
+  "originalUrl": "https://example.com/very/long/url/that/needs/shortening",
+  "createdAt": "2026-08-31T07:36:16.807Z",
+  "clicks": 0
 }
 ```
 
-Error responses:
-- `400` - URL is required or invalid format
-- `409` - Custom alias already taken
+### GET /api/urls
+Retrieve all shortened URLs with stats.
 
-### Redirect to Original URL
-**GET /:shortCode**
-
-Redirects (302) to the original URL and increments click count.
-
-Error responses:
-- `404` - Short code not found
-
-### Get All Links
-**GET /api/links**
-
-Response (200):
+**Response:**
 ```json
 [
   {
-    "shortCode": "abc123",
-    "originalUrl": "https://example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "clickCount": 5
+    "shortCode": "qi",
+    "shortUrl": "http://localhost:3000/qi",
+    "originalUrl": "https://example.com/very/long/url",
+    "createdAt": "2026-08-31T07:36:16.807Z",
+    "clicks": 5
   }
 ]
 ```
 
-Links are sorted by click count (descending).
+### GET /api/stats/:shortCode
+Get statistics for a specific shortened URL.
 
-### Delete Link
-**DELETE /api/links/:shortCode**
+**Response:**
+```json
+{
+  "shortCode": "qi",
+  "shortUrl": "http://localhost:3000/qi",
+  "originalUrl": "https://example.com/very/long/url",
+  "createdAt": "2026-08-31T07:36:16.807Z",
+  "clicks": 5
+}
+```
 
-Response:
-- `204` - Link deleted successfully
-- `404` - Short code not found
+### GET /:shortCode
+Redirect to the original URL (increments click count).
+
+## How to Use
+
+1. **Paste a URL** - Enter your long URL in the input field
+2. **Click Shorten** - The app generates a short code
+3. **Copy & Share** - Click Copy to add the short URL to your clipboard
+4. **Track Clicks** - See how many times people have clicked your link
+5. **View History** - All your shortened URLs appear in the list below
 
 ## Project Structure
 
 ```
-url-shortener/
-├── server.js           # Express server and API routes
-├── utils.js            # Helper functions (URL validation, code generation)
-├── server.test.js      # Jest + Supertest tests
-├── package.json        # Dependencies and scripts
+├── server.js          # Express server with API endpoints
 ├── public/
-│   ├── index.html      # Frontend UI
-│   ├── styles.css      # Styling
-│   └── script.js       # Frontend logic
-└── README.md
+│   ├── index.html     # Main HTML interface
+│   ├── styles.css     # Responsive styling with animations
+│   └── script.js      # Frontend logic and API calls
+├── package.json       # Dependencies and scripts
+└── README.md          # This file
 ```
 
-## Technical Details
+## Future Enhancements
 
-### URL Validation
-- Validates proper URL format using Node.js URL constructor
-- Only accepts `http://` and `https://` protocols
-
-### Short Code Generation
-- Generates 6-character alphanumeric codes
-- Character set: A-Z, a-z, 0-9 (62 possible characters)
-- ~56 billion possible combinations
-
-### Data Storage
-- In-memory Map-based store
-- Data structure per link:
-  ```javascript
-  {
-    shortCode: string,
-    originalUrl: string,
-    createdAt: ISO 8601 timestamp,
-    clickCount: number
-  }
-  ```
-
-### Security Considerations
-- URL format validation prevents invalid URLs
-- Custom alias validation (alphanumeric + hyphens/underscores)
-- No SQL injection risk (in-memory store)
-
-## Test Coverage
-
-```
-File       | % Stmts | % Branch | % Funcs | % Lines
------------|---------|----------|---------|--------
-All files  |   94.64 |    95.45 |   77.77 |   94.54
- server.js |   93.33 |       95 |   71.42 |   93.33
- utils.js  |     100 |      100 |     100 |     100
-```
-
-Test cases include:
-- URL creation with random and custom codes
-- URL validation (missing, invalid, non-http protocols)
-- Alias conflict handling (409)
-- Redirect functionality with click tracking
-- Links retrieval and sorting
-- Link deletion
-- Complete integration workflows
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- ES6+ JavaScript
-- CSS Grid and Flexbox
-- Clipboard API for copy functionality
-
-## License
-
-ISC
+- 🗄️ Database persistence (MongoDB, PostgreSQL, SQLite)
+- 👤 User authentication and personal URL collections
+- 🎯 Custom short codes (e.g., /my-awesome-link)
+- 📱 QR code generation
+- 📊 Advanced analytics and charts
+- ⏱️ URL expiration/TTL
+- 🚫 Rate limiting and abuse prevention
+- 🌐 URL validation and preview
+- 📈 Most clicked URLs ranking
