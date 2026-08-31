@@ -169,3 +169,6 @@ function escapeHtml(text) {
 
 // Load URLs on page load
 loadUrls();
+
+// Poll for URL updates every 2 seconds to refresh click counts after redirects
+setInterval(loadUrls, 2000);
