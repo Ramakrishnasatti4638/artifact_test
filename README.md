@@ -4,7 +4,7 @@ A test repository.
 
 ## Overview
 
-This repository is used for testing and experimentation purposes.
+A simple project used for testing repository workflows (branching, committing, and pull requests).
 
 ## Getting Started
 
