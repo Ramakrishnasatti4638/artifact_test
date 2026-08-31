@@ -240,14 +240,14 @@
         <div class="result-label">Short URL</div>
         <div class="result-value">
           <span id="shortUrlValue"></span>
-          <button class="copy-btn" data-copy="shortUrl">Copy</button>
+          <button type="button" class="copy-btn" data-copy="shortUrl">Copy</button>
         </div>
       </div>
       <div class="result-item">
         <div class="result-label">Original URL</div>
         <div class="result-value">
           <span id="originalUrlValue"></span>
-          <button class="copy-btn" data-copy="originalUrl">Copy</button>
+          <button type="button" class="copy-btn" data-copy="originalUrl">Copy</button>
         </div>
       </div>
     </div>
@@ -307,19 +307,32 @@
       }
     });
 
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const type = btn.dataset.copy;
-        const text = type === 'shortUrl' ? shortUrlValue.textContent : originalUrlValue.textContent;
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
 
-        navigator.clipboard.writeText(text).then(() => {
-          const originalText = btn.textContent;
-          btn.textContent = '✓ Copied';
-          setTimeout(() => {
-            btn.textContent = originalText;
-          }, 2000);
-        });
+      e.preventDefault();
+      e.stopPropagation();
+
+      const type = btn.dataset.copy;
+      const text = type === 'shortUrl' ? shortUrlValue.textContent : originalUrlValue.textContent;
+
+      if (!text) return;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied';
+        btn.style.background = '#4CAF50';
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 2000);
+      }).catch(() => {
+        btn.textContent = 'Failed';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
       });
     });
 
