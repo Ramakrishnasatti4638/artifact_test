@@ -1,0 +1,16 @@
+{
+  "name": "input-validation-demo",
+  "version": "1.0.0",
+  "description": "Input validation for main handler",
+  "main": "handler.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "test:verbose": "jest --verbose"
+  },
+  "keywords": ["validation", "handler"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
