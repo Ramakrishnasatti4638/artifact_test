@@ -102,6 +102,26 @@ app.get('/api/info/:shortId', (req, res) => {
   });
 });
 
+// Visit URL and increment clicks
+app.post('/api/visit/:shortId', (req, res) => {
+  const { shortId } = req.params;
+  const data = urls[shortId];
+
+  if (!data) {
+    return res.status(404).json({ error: 'Short URL not found' });
+  }
+
+  urls[shortId].clicks += 1;
+  saveUrls();
+
+  res.json({
+    short: shortId,
+    original: data.original,
+    created: data.created,
+    clicks: urls[shortId].clicks
+  });
+});
+
 // Redirect to original URL
 app.get('/:shortId', (req, res) => {
   const { shortId } = req.params;

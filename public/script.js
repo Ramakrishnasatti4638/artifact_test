@@ -121,12 +121,29 @@ async function deleteUrl(shortId) {
 }
 
 // Visit URL
-function visitUrl(shortId) {
-  // Reload the list after a short delay to reflect updated click count
-  fetch(`${API_BASE}/${shortId}`).catch(() => {});
-  setTimeout(() => {
-    loadUrls();
-  }, 500);
+async function visitUrl(shortId) {
+  try {
+    // Increment clicks via API
+    const response = await fetch(`${API_BASE}/api/visit/${shortId}`, {
+      method: 'POST'
+    });
+    
+    if (!response.ok) {
+      showError('Could not visit URL');
+      return;
+    }
+    
+    const urlData = await response.json();
+    
+    // Reload the list to show updated click count
+    await loadUrls();
+    
+    // Open the original URL in a new tab
+    window.open(urlData.original, '_blank');
+  } catch (err) {
+    console.error('Error visiting URL:', err);
+    showError('An error occurred while visiting the URL');
+  }
 }
 
 // Utility functions
