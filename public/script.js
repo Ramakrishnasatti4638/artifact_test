@@ -111,8 +111,9 @@ async function deleteUrl(shortId) {
       return;
     }
 
+    clearMessages();
     showSuccess('URL deleted successfully');
-    loadUrls();
+    await loadUrls();
   } catch (err) {
     showError('An error occurred while deleting');
     console.error(err);
@@ -121,7 +122,11 @@ async function deleteUrl(shortId) {
 
 // Visit URL
 function visitUrl(shortId) {
-  window.open(`${API_BASE}/${shortId}`, '_blank');
+  // Reload the list after a short delay to reflect updated click count
+  fetch(`${API_BASE}/${shortId}`).catch(() => {});
+  setTimeout(() => {
+    loadUrls();
+  }, 500);
 }
 
 // Utility functions
