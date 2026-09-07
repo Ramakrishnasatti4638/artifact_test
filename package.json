@@ -1,0 +1,19 @@
+{
+  "name": "snip-ly",
+  "version": "1.0.0",
+  "description": "A simple, modern URL shortener built with Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1",
+    "nanoid": "^3.3.18",
+    "sql.js": "^1.14.2"
+  }
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snip.ly — URL Shortener</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Hero ── -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="url(#grad)"/>
+          <path d="M9 16.5l5 5 9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1"/>
+              <stop offset="1" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Snip<span class="accent">.ly</span></span>
+      </div>
+      <p class="tagline">Shorten links. Track clicks. Share anywhere.</p>
+    </div>
+  </header>
+
+  <!-- ── Shortener Card ── -->
+  <main class="container">
+    <section class="card shorten-card">
+      <h2>Shorten a URL</h2>
+      <form id="shorten-form">
+        <div class="input-group">
+          <label for="url-input">Long URL</label>
+          <input id="url-input" type="url" placeholder="https://example.com/very/long/url" required autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label for="slug-input">Custom alias <span class="optional">(optional)</span></label>
+          <div class="slug-wrap">
+            <span class="slug-prefix" id="slug-prefix">snip.ly/</span>
+            <input id="slug-input" type="text" placeholder="my-link" maxlength="40" autocomplete="off" />
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" id="shorten-btn">
+          <span class="btn-label">Shorten</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+      </form>
+
+      <!-- Result banner -->
+      <div id="result-banner" class="result-banner hidden">
+        <div class="result-url-row">
+          <a id="result-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+          <button class="btn-copy" id="copy-btn" title="Copy to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <p class="result-meta" id="result-meta"></p>
+      </div>
+
+      <!-- Error banner -->
+      <div id="error-banner" class="error-banner hidden"></div>
+    </section>
+
+    <!-- ── URL Table ── -->
+    <section class="card table-card">
+      <div class="table-header">
+        <h2>Your Links</h2>
+        <button class="btn-ghost" id="refresh-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div id="table-wrap">
+        <p class="empty-state" id="empty-msg">No links yet. Shorten your first URL above!</p>
+        <table id="url-table" class="hidden">
+          <thead>
+            <tr>
+              <th>Short URL</th>
+              <th>Original URL</th>
+              <th>Clicks</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="url-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built with Express &amp; ♥ &nbsp;·&nbsp; <a href="https://github.com/" target="_blank" rel="noopener noreferrer">Source</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
