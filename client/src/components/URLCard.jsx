@@ -41,7 +41,7 @@ export default function URLCard({ urlData, onRefresh }) {
   })
 
   return (
-    <div className="url-card">
+    <div className="url-card" data-testid={`url-card-${urlData.id}`}>
       <div className="card-content">
         <div className="short-url-section">
           <label>Short URL</label>
@@ -51,6 +51,7 @@ export default function URLCard({ urlData, onRefresh }) {
               className={`btn-copy ${copied ? 'copied' : ''}`}
               onClick={handleCopy}
               title="Copy to clipboard"
+              data-testid="copy-button"
             >
               {copied ? '✓' : '📋'}
             </button>
@@ -65,11 +66,9 @@ export default function URLCard({ urlData, onRefresh }) {
             rel="noopener noreferrer"
             className="original-url"
             title={urlData.originalUrl}
+            data-testid="original-url"
           >
-            {urlData.originalUrl.length > 50 
-              ? urlData.originalUrl.substring(0, 50) + '...'
-              : urlData.originalUrl
-            }
+            {urlData.originalUrl}
           </a>
         </div>
 
