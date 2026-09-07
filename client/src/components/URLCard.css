@@ -1,0 +1,121 @@
+.url-card {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.url-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  background: #fafbff;
+}
+
+.url-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.url-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.url-label {
+  font-weight: 600;
+  color: #667eea;
+  min-width: 100px;
+  flex-shrink: 0;
+  font-size: 0.9em;
+}
+
+.short-link,
+.long-link {
+  color: #333;
+  text-decoration: none;
+  word-break: break-all;
+  transition: color 0.3s ease;
+  flex: 1;
+  font-size: 0.95em;
+}
+
+.short-link:hover,
+.long-link:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.short-link {
+  font-weight: 600;
+  color: #764ba2;
+}
+
+.url-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.created-date {
+  color: #999;
+  font-size: 0.85em;
+  flex: 1;
+}
+
+.copy-btn {
+  padding: 6px 14px;
+  background: white;
+  border: 1px solid #667eea;
+  color: #667eea;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+.copy-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 600px) {
+  .url-card {
+    padding: 12px;
+  }
+
+  .url-item {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .url-label {
+    min-width: auto;
+  }
+
+  .url-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .copy-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

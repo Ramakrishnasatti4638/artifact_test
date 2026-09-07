@@ -1,0 +1,22 @@
+.url-list {
+  margin-top: 40px;
+}
+
+.list-title {
+  font-size: 1.3em;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .list-title {
+    font-size: 1.1em;
+  }
+}
