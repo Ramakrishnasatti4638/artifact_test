@@ -1,7 +1,7 @@
 import URLCard from './URLCard'
 import './URLList.css'
 
-export default function URLList({ urls, onCopy }) {
+export default function URLList({ urls, onCopy, onClickShortLink }) {
   return (
     <div className="url-list">
       <h2 className="list-title">Your Shortened URLs</h2>
@@ -11,6 +11,7 @@ export default function URLList({ urls, onCopy }) {
             key={url.shortId}
             url={url}
             onCopy={onCopy}
+            onClickShortLink={onClickShortLink}
           />
         ))}
       </div>

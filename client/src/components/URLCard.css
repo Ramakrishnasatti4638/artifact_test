@@ -67,10 +67,23 @@
   flex-wrap: wrap;
 }
 
+.url-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
 .created-date {
   color: #999;
   font-size: 0.85em;
-  flex: 1;
+}
+
+.clicks-count {
+  color: #667eea;
+  font-size: 0.85em;
+  font-weight: 600;
 }
 
 .copy-btn {

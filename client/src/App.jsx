@@ -39,8 +39,15 @@ function App() {
   }
 
   const handleCopyToClipboard = (shortUrl) => {
-    navigator.clipboard.writeText(shortUrl)
     alert('Copied to clipboard!')
+  }
+
+  const handleClickShortLink = async (shortId) => {
+    // After a short delay (to allow the redirect to happen),
+    // refresh the URL list to see updated click counts
+    setTimeout(() => {
+      fetchUrls()
+    }, 500)
   }
 
   return (
@@ -61,6 +68,7 @@ function App() {
           <URLList 
             urls={urls}
             onCopy={handleCopyToClipboard}
+            onClickShortLink={handleClickShortLink}
           />
         )}
       </main>

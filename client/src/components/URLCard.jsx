@@ -1,12 +1,24 @@
 import './URLCard.css'
 
-export default function URLCard({ url, onCopy }) {
+export default function URLCard({ url, onCopy, onClickShortLink }) {
   const shortUrl = `${window.location.origin}/${url.shortId}`
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shortUrl)
-    // Trigger visual feedback
-    onCopy(shortUrl)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shortUrl)
+      // Trigger visual feedback after successful copy
+      onCopy(shortUrl)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+      alert('Failed to copy to clipboard')
+    }
+  }
+
+  const handleShortLinkClick = () => {
+    // Track the click when the short link is clicked
+    if (onClickShortLink) {
+      onClickShortLink(url.shortId)
+    }
   }
 
   return (
@@ -14,7 +26,14 @@ export default function URLCard({ url, onCopy }) {
       <div className="url-content">
         <div className="url-item">
           <span className="url-label">Short URL:</span>
-          <a href={shortUrl} target="_blank" rel="noopener noreferrer" className="short-link">
+          <a 
+            href={shortUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="short-link"
+            onClick={handleShortLinkClick}
+            data-testid={`short-link-${url.shortId}`}
+          >
             {shortUrl}
           </a>
         </div>
@@ -26,9 +45,14 @@ export default function URLCard({ url, onCopy }) {
         </div>
       </div>
       <div className="url-footer">
-        <span className="created-date">
-          Created: {new Date(url.createdAt).toLocaleDateString()}
-        </span>
+        <div className="url-footer-left">
+          <span className="created-date">
+            Created: {new Date(url.createdAt).toLocaleDateString()}
+          </span>
+          <span className="clicks-count" data-testid={`clicks-${url.shortId}`}>
+            👁️ Clicks: {url.clicks}
+          </span>
+        </div>
         <button 
           className="copy-btn"
           onClick={handleCopy}
