@@ -1,0 +1,150 @@
+.url-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.url-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.short-url-section,
+.original-url-section {
+  margin-bottom: 15px;
+}
+
+.short-url-section label,
+.original-url-section label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.short-url-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.short-url-display code {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.95em;
+  font-weight: 500;
+  color: #667eea;
+  word-break: break-all;
+  flex: 1;
+}
+
+.original-url {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  word-break: break-word;
+  transition: color 0.2s ease;
+}
+
+.original-url:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.btn-copy {
+  padding: 6px 10px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-copy:hover {
+  background: #e0e0e0;
+}
+
+.btn-copy.copied {
+  background: #efe;
+  color: #3c3;
+}
+
+.card-meta {
+  display: flex;
+  gap: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.meta-label {
+  font-size: 0.8em;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-value {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #667eea;
+  margin-top: 4px;
+}
+
+.btn-delete {
+  padding: 8px 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #fdd;
+  border-color: #f99;
+}
+
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .url-card {
+    flex-direction: column;
+  }
+
+  .card-meta {
+    flex-wrap: wrap;
+  }
+}
