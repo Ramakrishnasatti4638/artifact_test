@@ -39,15 +39,19 @@ function App() {
   }
 
   const handleCopyToClipboard = (shortUrl) => {
-    alert('Copied to clipboard!')
+    // Show alert to confirm copy success
+    window.alert('Copied to clipboard!')
   }
 
   const handleClickShortLink = async (shortId) => {
-    // After a short delay (to allow the redirect to happen),
-    // refresh the URL list to see updated click counts
-    setTimeout(() => {
-      fetchUrls()
-    }, 500)
+    // Increment click count immediately via API
+    try {
+      await axios.get(`/api/track/${shortId}`)
+      // Refresh the URL list to see updated click counts
+      await fetchUrls()
+    } catch (err) {
+      console.error('Failed to track click:', err)
+    }
   }
 
   return (

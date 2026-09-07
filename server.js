@@ -55,6 +55,19 @@ app.get('/api/list', (req, res) => {
   res.json(urls)
 })
 
+// Track click without redirecting
+app.get('/api/track/:shortId', (req, res) => {
+  const { shortId } = req.params
+  const entry = urlMap.get(shortId)
+
+  if (!entry) {
+    return res.status(404).json({ error: 'URL not found' })
+  }
+
+  entry.clicks++
+  res.json({ clicks: entry.clicks })
+})
+
 // Redirect to original URL
 app.get('/:shortId', (req, res) => {
   const { shortId } = req.params

@@ -14,10 +14,16 @@ export default function URLCard({ url, onCopy, onClickShortLink }) {
     }
   }
 
-  const handleShortLinkClick = () => {
+  const handleShortLinkClick = (e) => {
+    // Prevent default navigation to allow tracking first
+    e.preventDefault()
     // Track the click when the short link is clicked
     if (onClickShortLink) {
       onClickShortLink(url.shortId)
+      // Then redirect to the original URL
+      setTimeout(() => {
+        window.open(url.longUrl, '_blank')
+      }, 300)
     }
   }
 
