@@ -1,0 +1,46 @@
+.url-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sort-controls label {
+  font-weight: 600;
+  color: #555;
+}
+
+.sort-controls select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+.sort-controls select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.url-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .url-list {
+    gap: 1rem;
+  }
+
+  .url-cards {
+    gap: 0.75rem;
+  }
+}
