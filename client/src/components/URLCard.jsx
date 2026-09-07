@@ -10,7 +10,7 @@ export default function URLCard({ urlData, onRefresh }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), 3000)
   }
 
   const handleDelete = async () => {

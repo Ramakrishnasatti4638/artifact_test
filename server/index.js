@@ -55,7 +55,12 @@ app.get('/api/urls', (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Failed to fetch URLs' });
     }
-    res.json(rows);
+    // Normalize createdAt format to ISO string
+    const normalizedRows = rows.map(row => ({
+      ...row,
+      createdAt: new Date(row.createdAt).toISOString()
+    }));
+    res.json(normalizedRows);
   });
 });
 
@@ -133,7 +138,12 @@ app.get('/api/stats/:shortCode', (req, res) => {
     if (err || !row) {
       return res.status(404).json({ error: 'Short URL not found' });
     }
-    res.json(row);
+    // Normalize createdAt format to ISO string
+    const normalizedRow = {
+      ...row,
+      createdAt: new Date(row.createdAt).toISOString()
+    };
+    res.json(normalizedRow);
   });
 });
 
