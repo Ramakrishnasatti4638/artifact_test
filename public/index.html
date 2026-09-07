@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapLink — URL Shortener</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <span>SnapLink</span>
+      </div>
+      <p class="tagline">Shorten any URL in seconds</p>
+    </header>
+
+    <main>
+      <section class="card shorten-card">
+        <form id="shorten-form">
+          <div class="input-group">
+            <input
+              type="url"
+              id="url-input"
+              placeholder="Paste your long URL here…"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="submit" id="submit-btn">
+              <span class="btn-text">Shorten</span>
+              <span class="btn-spinner" hidden>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              </span>
+            </button>
+          </div>
+          <p id="error-msg" class="error" hidden></p>
+        </form>
+      </section>
+
+      <section id="result-section" class="card result-card" hidden>
+        <div class="result-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Your short link is ready!</span>
+        </div>
+        <div class="result-row">
+          <a id="short-url-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+          <button id="copy-btn" class="copy-btn" title="Copy to clipboard">
+            <svg id="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="copy-label">Copy</span>
+          </button>
+        </div>
+        <div class="original-row">
+          <span class="label">Original:</span>
+          <span id="original-url" class="original-url"></span>
+        </div>
+        <div class="visits-row">
+          <span class="label">Visits:</span>
+          <span id="visit-count" class="badge">0</span>
+        </div>
+      </section>
+
+      <section id="history-section" class="card history-card" hidden>
+        <h2>Recent Links</h2>
+        <ul id="history-list"></ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built with Express &amp; Vanilla JS · Links are stored in memory and reset on restart.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
