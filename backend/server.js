@@ -50,11 +50,11 @@ app.post('/api/shorten', (req, res) => {
   const { url } = req.body;
 
   if (!url) {
-    return res.status(422).json({ error: 'URL is required' });
+    return res.status(400).json({ error: 'URL is required' });
   }
 
   if (!isValidUrl(url)) {
-    return res.status(422).json({ error: 'Invalid URL format' });
+    return res.status(400).json({ error: 'Invalid URL format' });
   }
 
   const shortCode = generateShortCode();
