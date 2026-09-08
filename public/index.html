@@ -226,15 +226,15 @@
     <div id="error" class="error"></div>
 
     <div id="result" class="result">
-      <div class="result-title">✓ Your shortened URL</div>
+      <div class="result-title">✓ YOUR SHORTENED URL</div>
       <div class="url-box">
-        <input
-          type="text"
-          id="shortUrlDisplay"
+        <a
+          id="shortUrlLink"
           class="url-text"
-          readonly
-          style="background: transparent; border: none; padding: 0; color: #667eea; font-weight: 600;"
-        >
+          href="#"
+          target="_blank"
+          style="color: #667eea; font-weight: 600; text-decoration: none; word-break: break-all;"
+        ></a>
         <button class="copy-btn" id="copyBtn">Copy</button>
       </div>
       <div class="stats">
@@ -250,9 +250,10 @@
     const submitBtn = document.getElementById('submitBtn');
     const resultDiv = document.getElementById('result');
     const errorDiv = document.getElementById('error');
-    const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+    const shortUrlLink = document.getElementById('shortUrlLink');
     const copyBtn = document.getElementById('copyBtn');
     const originalUrlSpan = document.getElementById('originalUrl');
+    let currentShortUrl = '';
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -282,7 +283,9 @@
           throw new Error(data.error || 'Failed to shorten URL');
         }
 
-        shortUrlDisplay.value = data.shortUrl;
+        currentShortUrl = data.shortUrl;
+        shortUrlLink.textContent = data.shortUrl;
+        shortUrlLink.href = data.shortUrl;
         originalUrlSpan.textContent = data.originalUrl;
         resultDiv.classList.add('show');
         urlInput.value = '';
@@ -294,15 +297,16 @@
       }
     });
 
-    copyBtn.addEventListener('click', () => {
-      shortUrlDisplay.select();
-      document.execCommand('copy');
-      copyBtn.textContent = '✓ Copied!';
-      copyBtn.classList.add('copied');
-      setTimeout(() => {
-        copyBtn.textContent = 'Copy';
-        copyBtn.classList.remove('copied');
-      }, 2000);
+    copyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText(currentShortUrl).then(() => {
+        copyBtn.textContent = '✓ Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
     });
 
     function showError(message) {
