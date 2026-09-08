@@ -175,7 +175,6 @@
             color: #333;
             margin-bottom: 15px;
             font-size: 14px;
-            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
@@ -317,10 +316,10 @@
             e.preventDefault();
             const text = shortUrlResult.textContent;
             navigator.clipboard.writeText(text).then(() => {
-                copyBtn.textContent = '✓ Copied!';
+                copyBtn.innerHTML = '✓ Copied!';
                 copyBtn.classList.add('copied');
                 setTimeout(() => {
-                    copyBtn.textContent = 'Copy';
+                    copyBtn.innerHTML = 'Copy';
                     copyBtn.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
