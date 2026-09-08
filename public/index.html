@@ -208,6 +208,19 @@
             font-weight: 600;
         }
 
+        .short-url-link {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .short-url-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
         .error {
             padding: 12px;
             background: #ffebee;
@@ -273,7 +286,7 @@
             <div class="result-item">
                 <label>Short URL:</label>
                 <p id="shortUrlResult"></p>
-                <button class="copy-btn" onclick="copyToClipboard('shortUrlResult')">Copy</button>
+                <button class="copy-btn" id="copyBtn">Copy</button>
             </div>
             <div class="result-item">
                 <label>Original URL:</label>
@@ -297,6 +310,23 @@
         const originalUrlResult = document.getElementById('originalUrlResult');
         const urlsList = document.getElementById('urlsList');
         const urlsContainer = document.getElementById('urlsContainer');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // Handle copy button click
+        copyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const text = shortUrlResult.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -344,14 +374,17 @@
                     urlsContainer.innerHTML = urls
                         .reverse()
                         .map(
-                            (url) => `
+                            (url) => {
+                                const shortPath = url.shortUrl.split('/').pop();
+                                return `
                         <div class="url-item">
                             <div class="url-item-details">
-                                <p class="short">Short: ${url.shortUrl}</p>
+                                <p><a href="/${shortPath}" class="short-url-link" target="_blank">Short: ${url.shortUrl}</a></p>
                                 <p>Original: ${url.originalUrl}</p>
                             </div>
                         </div>
-                    `
+                    `;
+                            }
                         )
                         .join('');
                     urlsList.style.display = 'block';
@@ -359,19 +392,6 @@
             } catch (error) {
                 console.error('Error loading URLs:', error);
             }
-        }
-
-        function copyToClipboard(elementId) {
-            const text = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target;
-                btn.textContent = '✓ Copied!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
-            });
         }
 
         // Load existing URLs on page load
