@@ -220,6 +220,13 @@
         <input type="text" id="shortUrlDisplay" readonly />
         <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
       </div>
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+        <div class="result-label">Click count</div>
+        <div id="statsContainer" style="display: none;">
+          <p id="clickCount" style="color: #333; font-size: 16px; font-weight: 500;"></p>
+        </div>
+        <p style="color: #999; font-size: 12px; margin-top: 10px;">Click on the shortened URL above to test the redirect and increment click count.</p>
+      </div>
     </div>
   </div>
 
@@ -229,6 +236,9 @@
     const error = document.getElementById('error');
     const loading = document.getElementById('loading');
     const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+    const statsContainer = document.getElementById('statsContainer');
+    const clickCount = document.getElementById('clickCount');
+    let currentShortCode = '';
 
     async function shortenUrl() {
       const url = urlInput.value.trim();
@@ -263,14 +273,36 @@
         }
 
         const data = await response.json();
+        currentShortCode = data.shortCode;
         shortUrlDisplay.value = data.shortUrl;
+        shortUrlDisplay.style.cursor = 'pointer';
+        shortUrlDisplay.style.color = '#667eea';
+        shortUrlDisplay.style.textDecoration = 'underline';
         result.classList.add('show');
         urlInput.value = '';
+        
+        // Load initial stats
+        await loadStats();
 
       } catch (err) {
         showError(err.message);
       } finally {
         loading.classList.remove('show');
+      }
+    }
+
+    async function loadStats() {
+      if (!currentShortCode) return;
+      
+      try {
+        const response = await fetch(`/api/stats/${currentShortCode}`);
+        if (response.ok) {
+          const data = await response.json();
+          clickCount.textContent = `Clicks: ${data.clicks}`;
+          statsContainer.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Failed to load stats:', err);
       }
     }
 
@@ -296,6 +328,17 @@
     function hideError() {
       error.classList.remove('show');
     }
+
+    // Make the short URL field clickable
+    shortUrlDisplay.addEventListener('click', async () => {
+      if (currentShortCode) {
+        window.open(shortUrlDisplay.value, '_blank');
+        // Refresh stats after a short delay to show updated click count
+        setTimeout(async () => {
+          await loadStats();
+        }, 1000);
+      }
+    });
 
     // Allow Enter key to submit
     urlInput.addEventListener('keypress', (e) => {
