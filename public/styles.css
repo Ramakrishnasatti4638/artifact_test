@@ -1,0 +1,284 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+  animation: slideDown 0.6s ease-out;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin-bottom: 30px;
+  animation: slideUp 0.6s ease-out;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+input[type="url"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+input[type="url"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.result {
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 2px solid #f0f0f0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.result.hidden {
+  display: none;
+}
+
+.result-content {
+  animation: slideDown 0.4s ease-out;
+}
+
+.label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.url-display {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.url-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+  font-size: 0.95rem;
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-copy {
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-copy:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+.btn-copy.copied {
+  background: #4caf50;
+}
+
+.original-url {
+  margin-top: 15px;
+}
+
+.original-url-text {
+  color: #666;
+  word-break: break-all;
+  padding: 10px 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.error {
+  padding: 15px;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 8px;
+  margin-top: 15px;
+  border-left: 4px solid #c62828;
+  animation: slideDown 0.3s ease-out;
+}
+
+.error.hidden {
+  display: none;
+}
+
+.history-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.8s ease-out;
+}
+
+.history-section h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: all 0.2s;
+}
+
+.history-item:hover {
+  background: #f0f0f0;
+  transform: translateX(5px);
+}
+
+.history-item-code {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+.history-item-url {
+  color: #666;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.empty-history {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .card,
+  .history-section {
+    padding: 20px;
+  }
+
+  .url-display {
+    flex-direction: column;
+  }
+
+  .btn-copy {
+    width: 100%;
+  }
+}
